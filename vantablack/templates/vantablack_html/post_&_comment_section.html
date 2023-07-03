@@ -1,0 +1,89 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+    .home-container {
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr ;
+    }
+    .card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 800px;
+    margin: 20px;
+    padding: 16px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    }
+    .card1 {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 900px;
+    max-height: 300px;
+    margin: 10px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    }
+    
+    .card h2 {
+      font-size: 20px;
+      color: #333;
+    }
+    
+    .card p {
+      font-size: 16px;
+      color: #666;
+    }
+    
+    </style>
+<div class="home-container">
+
+    <div>
+
+        <h3></h3>
+        <hr>
+
+    </div>
+    
+    <div class="card">
+
+        <div>   
+            <!-- post views -->
+            <span>@{{ post_comment_section_id.post_user }}</span>
+            <h5>{{ post_comment_section_id.discription }}</h5>
+            <h5><img src =" {{ post_comment_section_id.post_image.url}}" width="500" ></h5>
+        </div>  
+        <hr>
+        <div> 
+            <!-- like and unlike -->
+            <form action="{% url 'post_comment_section' post_comment_section_id.id %}" method="post">
+                {% csrf_token %}
+                {% if request.user in post_comment_section_id.post_likes.all %}
+                  <button type="submit">Unlike</button>
+                {% else %}
+                  <button type="submit">Like</button>
+                {% endif %}
+            </form>
+            <p>{{ post_comment_section_id.post_likes.count }} likes</p>
+        </div>
+        <hr>
+        <div>
+            <!-- comment section -->
+            {% for comment in post_comment_section_id.commentviews_set.all %}
+                <h5>@{{ comment.comment_user }}</h5>
+                <h5>{{ comment.message }}</h5>
+                {% if comment.massage_image %}
+                    <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <hr>
+    </div>
+
+    <div>
+        <h3></h3>
+        <hr>
+    </div>
+
+</div>
+    
+{% endblock content %}

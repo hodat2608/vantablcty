@@ -1,0 +1,18 @@
+<a href="{% url 'homepage' %}">
+    <h1>LOGO</h1>
+</a>
+
+<div>
+    {% if request.user.is_authenticated %}
+        <h4>Xin chào @{{ request.session.username }}</h4>
+        <form action="{% url 'user_login' %}" method="get" class="button-form">
+            <input class= "button" type="submit" value="Logout">
+        </form>
+    {% else %}
+        <li><a href="{% url 'user_login'%}">Login</a></li>
+        <li><a href="{% url 'user_signup'%}">Signup</a></li>
+    {% endif %}
+</div>
+
+<hr>
+

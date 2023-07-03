@@ -1,0 +1,98 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+.home-container {
+display: grid;
+grid-template-columns: 2fr 3fr 2fr ;
+}
+.card {
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+max-width: 800px;
+margin: 20px;
+padding: 16px;
+background-color: #f1f1f1;
+border-radius: 5px;
+}
+.card1 {
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+max-width: 900px;
+max-height: 300px;
+margin: 10px;
+padding: 10px;
+background-color: #f1f1f1;
+border-radius: 5px;
+}
+
+.card h2 {
+  font-size: 20px;
+  color: #333;
+}
+
+.card p {
+  font-size: 16px;
+  color: #666;
+}
+
+</style>
+
+
+<div class="home-container">
+    <div>
+
+        <h3>Danh mục khác</h3>
+        <hr>
+
+    </div>
+
+    <div class="card">
+        <div>
+            <h3><a href="{% url 'create_post' %}">Create Post</a></h3>
+            <hr>    
+            <div>
+                <form action="{% url 'search_user' %}" method="get">
+                <input type="text" name="query" placeholder="Tìm kiếm">
+                <input type="submit" value="Tìm kiếm">
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div>
+            {% for post in posts%}
+                <div>
+                    <a href="{% url 'post_profile' post.post_user_id %}">@{{ post.post_user }}</a>
+                    <h5>{{ post.discription }}</h5>
+                    <h5><img src =" {{ post.post_image.url}}" width="700"></h5>
+                    <h5></h5>---------------------------------------------------Comment Section----------------------------------------------------------</h5>
+                </div>
+
+                <div>
+                    <form action="{% url 'post_likes_homepage' post.id %}" method="post">
+                        {% csrf_token %}
+                        {% if request.user in post.post_likes.all %}
+                        <button type="submit">Unlike</button>
+                        {% else %}
+                        <button type="submit">Like</button>
+                        {% endif %}
+                    </form>
+                    <p>{{ post.post_likes.count }} likes</p>
+                </div>
+
+                <div>
+                    <a href="{% url 'post_comment_section' post.id %}">Bình luận</a>
+                </div>
+                
+                <hr>
+            {% endfor %}
+        </div>   
+    </div>
+
+    <div>
+        <h3>Đang hoạt động</h3>
+        <hr>
+    </div>
+
+</div>
+{% endblock content %}
+

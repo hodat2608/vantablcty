@@ -1,0 +1,12 @@
+{% extends 'main.html' %}
+
+{% block content %}
+    <div>
+        <form action="{% url 'create_post' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+                <td><input type="text" name="discription" id="discription" placeholder="Type here..."style="border: none;text-align: center;"></td>
+                <td> <input type="file" name="post_image"></td>
+                <td><input type="submit" value="add"></td>
+        </form>
+    </div>
+{% endblock content %}
