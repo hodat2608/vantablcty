@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse 
 from .models import PostViews, CommentViews , User
 from django.shortcuts import get_object_or_404, render
-from .forms import user_post_form
+from .forms import user_post_form,user_send_comment_form
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render
@@ -97,6 +97,22 @@ def post_comment_section(request,pk):
         else:
             post_comment_section_id.post_likes.add(user)
     return render(request, 'vantablack_html/post_&_comment_section.html', {'post_comment_section_id' : post_comment_section_id},)
+
+def send_comment(request,pk):
+    comment_for_post = get_object_or_404(PostViews,pk=pk)
+    comment_for_post_where_id = comment_for_post.id
+    if request.method == 'POST':
+        form = user_send_comment_form(request.POST, request.FILES)
+        if form.is_valid():
+            message = form.cleaned_data['message']
+            massage_image = request.FILES.get('massage_image')
+            send_message = CommentViews.objects.create(comment_user=request.user,post_comment=comment_for_post,
+                message=message,massage_image=massage_image)
+            send_message.save()
+            return redirect('post_comment_section',pk=comment_for_post_where_id)
+    else: 
+        form = user_send_comment_form()
+    return render(request, 'reddot_html/post_&_comment_section.html', {'form' : form},)
 
 def user_signup(request):
     if request.method == 'POST':

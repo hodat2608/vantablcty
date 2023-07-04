@@ -47,7 +47,9 @@
     <div class="card">
         {% for post in all_posts %}
             <span>@{{ post.post_user }}</span>
-            <a href="{% url 'del_post' post.id %}" >del post</a>
+            {% if post.post_user == request.user %}
+                <a href="{% url 'del_post' post.id %}" >del post</a>
+            {% endif %}
             <h5>{{ post.discription }}</h5>
             <h5><img src =" {{ post.post_image.url}}" width="500" ></h5>
 

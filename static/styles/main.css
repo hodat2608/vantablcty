@@ -1,0 +1,21 @@
+body { 
+    background-color: rgb(185, 218, 204);
+}   
+
+.card-homepage {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+
+.button-container {
+    display: flex;
+    align-items: center;
+}
+
+.button-container button {
+    margin-right: 10px;
+}
+

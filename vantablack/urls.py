@@ -13,6 +13,8 @@ urlpatterns = [
 
      path('post_comment_section/<str:pk>/', views.post_comment_section, name = 'post_comment_section'),
 
+     path('send_comment/<str:pk>/', views.send_comment, name = 'send_comment'),
+
     path('search_user/', views.search_user, name = 'search_user'),
 
     path('user_signup/', views.user_signup, name='user_signup'),

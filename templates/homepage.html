@@ -46,8 +46,8 @@ border-radius: 5px;
 
     </div>
 
-    <div class="card">
-        <div>
+    <div >
+        <div class="card" >
             <h3><a href="{% url 'create_post' %}">Create Post</a></h3>
             <hr>    
             <div>
@@ -60,30 +60,51 @@ border-radius: 5px;
         <hr>
         <div>
             {% for post in posts%}
-                <div>
-                    <a href="{% url 'post_profile' post.post_user_id %}">@{{ post.post_user }}</a>
-                    <h5>{{ post.discription }}</h5>
-                    <h5><img src =" {{ post.post_image.url}}" width="700"></h5>
-                    <h5></h5>---------------------------------------------------Comment Section----------------------------------------------------------</h5>
-                </div>
+                <div class="card">
 
-                <div>
-                    <form action="{% url 'post_likes_homepage' post.id %}" method="post">
-                        {% csrf_token %}
-                        {% if request.user in post.post_likes.all %}
-                        <button type="submit">Unlike</button>
-                        {% else %}
-                        <button type="submit">Like</button>
-                        {% endif %}
-                    </form>
-                    <p>{{ post.post_likes.count }} likes</p>
-                </div>
+                    <div>
+                        <a href="{% url 'post_profile' post.post_user_id %}">@{{ post.post_user }}</a>
+                        <h5>{{ post.discription }}</h5>
+                        <h5><img src =" {{ post.post_image.url}}" width="700"></h5>
+                    </div>
 
-                <div>
-                    <a href="{% url 'post_comment_section' post.id %}">Bình luận</a>
+                    <hr>
+
+                    <div>
+
+                        <div>
+                            <p>{{ post.post_likes.count }} likes</p>
+                        </div>
+
+                        <hr>
+
+                        <div class="button-container">
+                            <div>
+                                <form action="{% url 'post_likes_homepage' post.id %}" method="post">
+                                    {% csrf_token %}
+                                    {% if request.user in post.post_likes.all %}
+                                    <button type="submit">Unlike</button>
+                                    {% else %}
+                                    <button type="submit">Like</button>
+                                    {% endif %}
+                                </form>
+                                
+                            </div>
+
+
+                            <div>
+                                <form action="{% url 'post_comment_section' post.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit">Comment</button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <hr>
+
                 </div>
-                
-                <hr>
             {% endfor %}
         </div>   
     </div>

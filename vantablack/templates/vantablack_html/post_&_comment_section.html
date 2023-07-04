@@ -50,7 +50,7 @@
             <!-- post views -->
             <span>@{{ post_comment_section_id.post_user }}</span>
             <h5>{{ post_comment_section_id.discription }}</h5>
-            <h5><img src =" {{ post_comment_section_id.post_image.url}}" width="500" ></h5>
+            <h5><img src =" {{ post_comment_section_id.post_image.url}}" width="700" ></h5>
         </div>  
         <hr>
         <div> 
@@ -65,12 +65,26 @@
             </form>
             <p>{{ post_comment_section_id.post_likes.count }} likes</p>
         </div>
+
         <hr>
+
+        <div>
+            <h5>Write your comment here</h5>
+            <form action="{% url 'send_comment' post_comment_section_id.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                    <td><input type="text" name="message" id="message" placeholder="Type here..."style="border: none;text-align: center;"></td>
+                    <td> <input type="file" name="massage_image"></td>
+                    <td><input type="submit" value="Comment"></td>
+            </form>
+        </div>
+
+        <hr> 
+
         <div>
             <!-- comment section -->
             {% for comment in post_comment_section_id.commentviews_set.all %}
-                <h5>@{{ comment.comment_user }}</h5>
-                <h5>{{ comment.message }}</h5>
+                <h5><a href=" {% url 'post_profile' comment.comment_user_id %}" >@{{ comment.comment_user }}</a></h5>
+                <small>{{ comment.message }} __ {{comment.created|timesince}}</small>
                 {% if comment.massage_image %}
                     <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
                 {% endif %}
