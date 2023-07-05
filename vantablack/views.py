@@ -74,19 +74,20 @@ def post_likes_post_profile(request,pk):
     return redirect('post_profile',pk=post_user)
 
 def search_user(request):
+    posts = PostViews.objects.all()
     if request.method == 'GET':
         query =  request.GET.get('query')  
         if query :
             try:
                 search_users = User.objects.filter(username__icontains=query)
-                context = {'search_users': search_users}
+                context = {'search_users': search_users,'posts':posts}
             except User.DoesNotExist:
                 return render(request, 'homepage.html', {
-                    'error2': "Không tìm thấy",
+                    'error': "Không tìm thấy kết quả",
                 })
         else:
-            context = {} 
-        return render(request, 'vantablack_html/search_user.html', context)
+            context = {'posts': posts} 
+        return render(request, 'homepage.html', context)
 
 def post_comment_section(request,pk):
     post_comment_section_id = get_object_or_404(PostViews,pk=pk)

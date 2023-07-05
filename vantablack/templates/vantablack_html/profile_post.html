@@ -1,40 +1,7 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<style>
-    .home-container {
-    display: grid;
-    grid-template-columns: 2fr 3fr 2fr ;
-    }
-    .card {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-width: 800px;
-    margin: 20px;
-    padding: 16px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    }
-    .card1 {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-width: 900px;
-    max-height: 300px;
-    margin: 10px;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    }
-    
-    .card h2 {
-      font-size: 20px;
-      color: #333;
-    }
-    
-    .card p {
-      font-size: 16px;
-      color: #666;
-    }
-    
-    </style>
+
 <div class="home-container">
 
     <div>
@@ -44,33 +11,54 @@
 
     </div>
     
-    <div class="card">
-        {% for post in all_posts %}
-            <span>@{{ post.post_user }}</span>
-            {% if post.post_user == request.user %}
-                <a href="{% url 'del_post' post.id %}" >del post</a>
-            {% endif %}
-            <h5>{{ post.discription }}</h5>
-            <h5><img src =" {{ post.post_image.url}}" width="500" ></h5>
+    
+    <div>
 
-            <div>
-                <form action="{% url 'post_likes_post_profile' post.id %}" method="post">
-                    {% csrf_token %}
-                    {% if request.user in post.post_likes.all %}
-                    <button type="submit">Unlike</button>
-                    {% else %}
-                    <button type="submit">Like</button>
+        {% for post in all_posts %}
+        
+            <div class="card">
+
+                <div>
+                    <span><a href="{% url 'post_profile' post.post_user_id %}" >@{{ post.post_user }}</a></span>
+                    {% if post.post_user == request.user %}
+                        <a href="{% url 'del_post' post.id %}" >del post</a>
                     {% endif %}
-                </form>
-                <p>{{ post.post_likes.count }} likes</p>
-            </div>
+                    <h5>{{ post.discription }}</h5>
+                    <h5><img src =" {{ post.post_image.url}}" width="700" ></h5>
+                </div>
+
+                <hr>
+
+                <div class="info-container">
+                    <p>{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p>
+                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                </div>
+
+                <hr>
+
+                <div class="btn-group">
+                    <form action="{% url 'post_likes_post_profile' post.id %}" method="post">
+                        {% csrf_token %}
+                        {% if request.user in post.post_likes.all %}
+                        <button type="submit">Unlike</button>
+                        {% else %}
+                        <button type="submit">Like</button>
+                        {% endif %}
+                    </form>
+                
+                    <form action="{% url 'post_comment_section' post.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Comment</button>
+                    </form>
+
+                </div>
             
-            <div>
-                <a href="{% url 'post_comment_section' post.id %}">Bình luận</a>
+                <hr>
+
             </div>
-            
-            <hr>
+
         {% endfor %}
+
     </div>
 
     <div>
