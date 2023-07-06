@@ -1,40 +1,9 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<style>
-    .home-container {
-    display: grid;
-    grid-template-columns: 2fr 3fr 2fr ;
-    }
-    .card {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-width: 800px;
-    margin: 20px;
-    padding: 16px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    }
-    .card1 {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-width: 900px;
-    max-height: 300px;
-    margin: 10px;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    }
-    
-    .card h2 {
-      font-size: 20px;
-      color: #333;
-    }
-    
-    .card p {
-      font-size: 16px;
-      color: #666;
-    }
-    
-    </style>
+
+{% include 'styles.html' %}
+
 <div class="home-container">
 
     <div>
@@ -48,17 +17,15 @@
 
         <div>   
             <!-- post views -->
-            <span><a href="{% url 'post_profile' post_comment_section_id.post_user_id %}">@{{ post_comment_section_id.post_user }}</a></span>
+            <span><a href="{% url 'post_profile' post_comment_section_id.post_user_id %} " >@{{ post_comment_section_id.post_user }}</a></span>
             <h5>{{ post_comment_section_id.discription }}</h5>
             <h5><img src =" {{ post_comment_section_id.post_image.url}}" width="700" ></h5>
         </div> 
-        
+
         <div class="info-container">
             <p style="margin-right: 10px;">{{ post_comment_section_id.post_likes.count }} like{{ post_comment_section_id.post_likes.count|pluralize  }}</p>
             <p>{{ post_comment_section_id.commentviews_set.count }} comment{{ post_comment_section_id.commentviews_set.count|pluralize }}</p>
         </div>
-        
-        <hr>
 
         <div class="btn-group"> 
             <!-- like and unlike -->
@@ -72,37 +39,57 @@
             </form>
 
             <form action="{% url 'post_comment_section' post_comment_section_id.id %}" method="post">
-                {% csrf_token %}
+                {% csrf_token %}  
                 <button type="submit">Comment</button>
             </form>
-
+            
         </div>
 
         <hr>
 
-        <div>
-            <h5>Write your comment here</h5>
-            <form action="{% url 'send_comment' post_comment_section_id.id %}" method="post" enctype="multipart/form-data">
+        <div class="widget-post1" aria-labelledby="post-header-title">
+            <form action="{% url 'send_comment' post_comment_section_id.id %}" method="post" enctype="multipart/form-data" class="widget-post1__form" aria-label="post widget">
                 {% csrf_token %}
-                    <td><input type="text" name="message" id="message" placeholder="Type here..."style="border: none;text-align: center;"></td>
-                    <td> <input type="file" name="massage_image"></td>
-                    <td><input type="submit" value="Comment"></td>
+                <div class="widget-post__content">
+                    <label for="post-content" class="sr-only">Share</label>
+                    <textarea name="message" id="message" class="widget-post__textarea scroller" placeholder="..."></textarea>
+                </div>
+                <div class="widget-post__actions1 post--actions1">
+                    <div class="post-actions__attachments">
+                        <button type="button" class="btn post-actions__upload attachments--btn">
+                            {% csrf_token %}
+                            <label for="upload-image" class="post-actions__label">
+                            <i class="fa fa-upload" aria-hidden="true"></i> 
+                            image
+                            </label>
+                        </button>
+                        <input type="file" name="massage_image" id="upload-image" multiple>
+                    </div>
+                    <div class="post-actions__widget">
+                        {% csrf_token %}
+                        <button type="submit" class="btn post-actions__publish">Comment</button>
+                    </div>                  
+                </div>
             </form>
         </div>
 
         <hr> 
 
-        <div>
+        <div class="comment-cad">
             <!-- comment section -->
             {% for comment in post_comment_section_id.commentviews_set.all %}
-                <h5><a href=" {% url 'post_profile' comment.comment_user_id %}" >@{{ comment.comment_user }}</a></h5>
-                <small>{{ comment.message }} __ {{comment.created|timesince}}</small>
-                {% if comment.massage_image %}
-                    <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
-                {% endif %}
+                <div class="comment-cad">
+                    <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
+                    <small>{{ comment.message }}</small>
+                    {% if comment.massage_image %}
+                        <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
+                    {% endif %}
+                </div>
             {% endfor %}
         </div>
+
         <hr>
+        
     </div>
 
     <div>

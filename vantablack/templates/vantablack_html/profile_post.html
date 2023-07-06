@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% include 'styles.html' %}
+
 <div class="home-container">
 
     <div>
@@ -10,7 +12,6 @@
         <hr>
 
     </div>
-    
     
     <div>
 
@@ -50,7 +51,6 @@
                         {% csrf_token %}
                         <button type="submit">Comment</button>
                     </form>
-
                 </div>
             
                 <hr>
