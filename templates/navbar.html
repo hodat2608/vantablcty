@@ -1,18 +1,19 @@
-<a href="{% url 'homepage' %}">
-    <h1>LOGO</h1>
-</a>
-
-<div>
-    {% if request.user.is_authenticated %}
-        <h2><a href="{% url 'post_profile' request.user.id %}">@{{ request.user.username }}</a></h2>
-        <form action="{% url 'user_login' %}" method="get">
-            <input type="submit" value="Logout">
-        </form>
-    {% else %}
-        <li><a href="{% url 'user_login'%}">Login</a></li>
-        <li><a href="{% url 'user_signup'%}">Signup</a></li>
-    {% endif %}
+<div class="info-container">
+    <div>
+        <a href="{% url 'homepage' %}">
+            <h1>LOGO</h1>
+        </a>
+    </div>
+    <div>
+        {% if request.user.is_authenticated %}
+            <h2><a href="{% url 'post_profile' request.user.id %}">@{{ request.user.username }}</a></h2>
+            <form action="{% url 'user_login' %}" method="get">
+                <input type="submit" value="Logout">
+            </form>
+        {% else %}
+            <li><a href="{% url 'user_login'%}">Login</a></li>
+            <li><a href="{% url 'user_signup'%}">Signup</a></li>
+        {% endif %}
+    </div>
 </div>
-
 <hr>
-

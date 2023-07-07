@@ -14,7 +14,9 @@ class ProfileUser(models.Model):
     address = models.TextField(null=True, blank= True, max_length=1000000)
     phone_number = models.TextField(null=True, blank= True, max_length=1000000)
     date_join = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
 
+        return self.user.username
 
 
 class PostViews(models.Model):
@@ -45,3 +47,18 @@ class CommentViews(models.Model):
 
     def __str__(self):
         return self.comment_user.username
+
+
+class activity_history(models.Model):
+    activity_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    activity_post = models.ForeignKey(PostViews, on_delete=models.CASCADE, null=True,blank=True)
+    activity_comment = models.ForeignKey(CommentViews, on_delete=models.CASCADE, null=True,blank=True)
+    activity_action = models.CharField(max_length=20)
+    shared_to_profile = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
+
+    def __str__(self):
+        return self.activity_action

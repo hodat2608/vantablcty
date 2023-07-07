@@ -2,8 +2,6 @@
 
 {% block content %}
 
-{% include 'styles.html' %}
-
 <div class="home-container">
 
     <div>
@@ -17,9 +15,9 @@
 
         <div>   
             <!-- post views -->
-            <span><a href="{% url 'post_profile' post_comment_section_id.post_user_id %} " >@{{ post_comment_section_id.post_user }}</a></span>
+            <span>@{{ post_comment_section_id.post_user }}</span>
             <h5>{{ post_comment_section_id.discription }}</h5>
-            <h5><img src =" {{ post_comment_section_id.post_image.url}}" width="700" ></h5>
+            <h5><img src =" {{ post_comment_section_id.post_image.url}}" width="600" ></h5>
         </div> 
 
         <div class="info-container">
@@ -28,11 +26,11 @@
         </div>
 
         <div class="btn-group"> 
-            <!-- like and unlike -->
+            <!-- like and Hate -->
             <form action="{% url 'post_comment_section' post_comment_section_id.id %}" method="post">
                 {% csrf_token %}
                 {% if request.user in post_comment_section_id.post_likes.all %}
-                  <button type="submit">Unlike</button>
+                  <button type="submit">Hate</button>
                 {% else %}
                   <button type="submit">Like</button>
                 {% endif %}
@@ -41,6 +39,11 @@
             <form action="{% url 'post_comment_section' post_comment_section_id.id %}" method="post">
                 {% csrf_token %}  
                 <button type="submit">Comment</button>
+            </form>
+
+            <form action="#" method="post">
+                {% csrf_token %}  
+                <button type="submit">Share</button>
             </form>
             
         </div>
@@ -52,7 +55,7 @@
                 {% csrf_token %}
                 <div class="widget-post__content">
                     <label for="post-content" class="sr-only">Share</label>
-                    <textarea name="message" id="message" class="widget-post__textarea scroller" placeholder="..."></textarea>
+                    <textarea name="message" id="message" class="widget-post__textarea1 scroller" placeholder="..."></textarea>
                 </div>
                 <div class="widget-post__actions1 post--actions1">
                     <div class="post-actions__attachments">

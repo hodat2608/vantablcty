@@ -2,68 +2,117 @@
 
 {% block content %}
 
-{% include 'styles.html' %}
+
 
 <div class="home-container">
 
     <div>
 
-        <h3></h3>
+        <h3> 
+            <h5>{{profile_user_id.fullname}}</h5>
+            <h5>{{profile_user_id.bio}}</h5>
+            <h5>{{profile_user_id.date_birth}}</h5>
+            <h5>{{profile_user_id.email}}</h5>
+            <h5>{{profile_user_id.address}}</h5>
+            <h5>{{profile_user_id.phone_number}}</h5>
+            <h5>{{profile_user_id.date_join}}</h5>  
+        </h3>
+
         <hr>
 
     </div>
     
-    <div>
+    <div >
+
+        <div class="widget-post2" aria-labelledby="post-header-title">
+            <div class="widget-post__header">
+                <h2 class="widget-post__title" id="post-header-title">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                What are you thinking ?
+                </h2>
+            </div>
+            <form action="{% url 'create_post' %}" method="post" enctype="multipart/form-data" class="widget-post__form" aria-label="post widget">
+                {% csrf_token %}
+                <div class="widget-post__content">
+                    <label for="post-content" class="sr-only">Share</label>
+                    <textarea type="text" name="discription" id="discriptiont" class="widget-post__textarea2 scroller" placeholder="..."></textarea>
+                </div>
+                <div class="widget-post__actions2 post--actions2">
+                    <div class="post-actions__attachments">
+                        <button type="button" class="btn post-actions__upload attachments--btn">
+                        {% csrf_token %}
+                        <label for="upload-image" class="post-actions__label">
+                            <i class="fa fa-upload" aria-hidden="true"></i> 
+                            upload image
+                        </label>
+                        </button>
+                        <input type="file" name="post_image" id="upload-image" multiple>
+                    </div>
+                    <div class="post-actions__widget">
+                        {% csrf_token %}
+                        <button type="submit" class="btn post-actions__publish">publish</button>
+                    </div>
+                </div>             
+            </form>
+        </div>
+
+
+        <div class="card">
+            <a>share section</a>
+        </div>
+
 
         {% for post in all_posts %}
-        
-            <div class="card">
+        <div class="card">
 
-                <div>
-                    <span><a href="{% url 'post_profile' post.post_user_id %}" >@{{ post.post_user }}</a></span>
-                    {% if post.post_user == request.user %}
-                        <a href="{% url 'del_post' post.id %}" >del post</a>
-                    {% endif %}
-                    <h5>{{ post.discription }}</h5>
-                    <h5><img src =" {{ post.post_image.url}}" width="700" ></h5>
-                </div>
-
-                <hr>
-
-                <div class="info-container">
-                    <p>{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p>
-                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
-                </div>
-
-                <hr>
-
-                <div class="btn-group">
-                    <form action="{% url 'post_likes_post_profile' post.id %}" method="post">
-                        {% csrf_token %}
-                        {% if request.user in post.post_likes.all %}
-                        <button type="submit">Unlike</button>
-                        {% else %}
-                        <button type="submit">Like</button>
-                        {% endif %}
-                    </form>
-                
-                    <form action="{% url 'post_comment_section' post.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit">Comment</button>
-                    </form>
-                </div>
-            
-                <hr>
-
+            <div>
+                <span>@{{ post.post_user }}</span>
+                {% if post.post_user == request.user %}
+                    <a href="{% url 'del_post' post.id %}" >del post</a>
+                {% endif %}
+                <h5>{{ post.discription }}</h5>
+                <h5><img src =" {{ post.post_image.url}}" width="600" ></h5>
             </div>
 
+            <div class="info-container">
+                <p>{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p>
+                <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+            </div>
+
+            <hr>
+
+            <div class="btn-group">
+
+                <form action="{% url 'post_likes_post_profile' post.id %}" method="post">
+                    {% csrf_token %}
+                    {% if request.user in post.post_likes.all %}
+                        <button type="submit">Hate</button>
+                    {% else %}
+                        <button type="submit">Like</button>
+                    {% endif %}
+                </form>
+            
+                <form action="{% url 'post_comment_section' post.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Comment</button>
+                </form>
+
+                <form action="#" method="post">
+                    {% csrf_token %}  
+                    <button type="submit">Share</button>
+                </form>
+
+            </div>
+        </div>   
         {% endfor %}
 
     </div>
 
     <div>
+
         <h3></h3>
         <hr>
+
     </div>
 
 </div>

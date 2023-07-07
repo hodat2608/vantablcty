@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from django.shortcuts import render
 from django.http import HttpResponse 
-from .models import PostViews, CommentViews , User
+from .models import PostViews, CommentViews , User, ProfileUser, activity_history
 from django.shortcuts import get_object_or_404, render
 from .forms import user_post_form,user_send_comment_form
 from django.shortcuts import redirect
@@ -26,7 +26,8 @@ from django.http import JsonResponse
 
 def profile_post(request,pk):
     all_posts = PostViews.objects.filter(post_user_id=pk)
-    context = {'all_posts' : all_posts, }
+    profile_user_id = ProfileUser.objects.get(user_id=pk) 
+    context = {'all_posts' : all_posts,'profile_user_id':profile_user_id }
     return render(request, 'vantablack_html/profile_post.html', context)
 
 def homepage(request,):

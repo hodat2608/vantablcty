@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% include 'styles.html' %}
+
 
 <div class="home-container">
     
@@ -35,43 +35,36 @@
             <hr>
 
             <div>
-                <button class="create-button" onclick="toggleCreatePostForm(event)">Make your post here...</button>
+                <button class="create-button" onclick="toggleCreatePostForm(event)">{{request.user.username}} ơi, bạn đang nghĩ gì thế? </button>
             </div>
             
             <hr>
         
             <div class="widget-post" aria-labelledby="post-header-title" id="create-post-form" style="display: none;">
-                <div class="widget-post__header">
-                    <h2 class="widget-post__title" id="post-header-title">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    What are you thinking ?
-                    </h2>
-                </div>
                 <form action="{% url 'create_post' %}" method="post" enctype="multipart/form-data" class="widget-post__form" aria-label="post widget">
                     {% csrf_token %}
                     <div class="widget-post__content">
                         <label for="post-content" class="sr-only">Share</label>
-                        <textarea name="discription" id="discriptiont" class="widget-post__textarea scroller" placeholder="..."></textarea>
+                        <textarea name="discription" id="discriptiont" class="widget-post__textarea scroller" placeholder="{{request.user.username}} ơi bạn đang nghĩ gì thế? "></textarea>
                     </div>
                     <div class="widget-post__actions post--actions">
                         <div class="post-actions__attachments">
                             <button type="button" class="btn post-actions__upload attachments--btn">
                             {% csrf_token %}
-                                <label for="upload-image" class="post-actions__label">
-                                    <i class="fa fa-upload" aria-hidden="true"></i> 
-                                    upload image
-                                </label>
+                            <label for="upload-image" class="post-actions__label">
+                                <i class="fa fa-upload" aria-hidden="true"></i> 
+                                upload image
+                            </label>
                             </button>
                             <input type="file" name="post_image" id="upload-image" multiple>
                         </div>
                         <div class="post-actions__widget">
                             {% csrf_token %}
                             <button type="submit" class="btn post-actions__publish">publish</button>
-                        </div>                  
-                    </div>
+                        </div>
+                    </div>             
                 </form>
             </div>
-            
             
         </div>
 
@@ -83,11 +76,8 @@
                     <div>
                         <a href="{% url 'post_profile' post.post_user_id %}">@{{ post.post_user }}</a>
                         <h5>{{ post.discription }}</h5>
-                        <h5><img src =" {{ post.post_image.url}}" width="700"></h5>
+                        <h5><img src =" {{ post.post_image.url}}" width="600"></h5>
                     </div>
-
-                    <hr>
-
                     <div class="info-container">
                         <p>{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
                         <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>                     
@@ -97,18 +87,34 @@
 
                     <div class="btn-group">
 
+                        <!-- <div id="like-container">
+                            <form id="like-form" data-post-id="{{ post.id }}">
+                                {% csrf_token %}
+                                {% if request.user in post.post_likes.all %}
+                                <button type="submit">Liked</button>
+                                {% else %}
+                                <button type="submit">Like</button>
+                                {% endif %}
+                            </form>
+                        </div> -->
+                        
                         <form action="{% url 'post_likes_homepage' post.id %}" method="post">
                             {% csrf_token %}
                             {% if request.user in post.post_likes.all %}
-                            <button type="submit">Unlike</button>
+                            <button type="submit">Liked</button>
                             {% else %}
                             <button type="submit">Like</button>
                             {% endif %}
-                        </form>                        
+                        </form>
                     
                         <form action="{% url 'post_comment_section' post.id %}" method="post">
                             {% csrf_token %}  
                             <button type="submit">Comment</button>
+                        </form>
+
+                        <form action="#" method="post">
+                            {% csrf_token %}  
+                            <button type="submit">Share</button>
                         </form>
 
                     </div>
@@ -128,3 +134,37 @@
 {% endblock content %}
 
 
+
+
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#like-form").submit(function(event) {
+            event.preventDefault();
+
+            var postId = $(this).data("post-id");
+
+            $.ajax({
+                url: "/post_likes_homepage/" + postId + "/",
+                type: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                success: function(response) {
+                    updateLikeButton(postId);
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        function updateLikeButton(postId) {
+            var likeButton = $("#like-form button");
+
+            if (likeButton.text() === "Like") {
+                likeButton.text("Liked");
+            } else {
+                likeButton.text("Like");
+            }
+        }
+    });
+</script> -->
