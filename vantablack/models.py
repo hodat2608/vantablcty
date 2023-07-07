@@ -54,7 +54,7 @@ class activity_history(models.Model):
     activity_post = models.ForeignKey(PostViews, on_delete=models.CASCADE, null=True,blank=True)
     activity_comment = models.ForeignKey(CommentViews, on_delete=models.CASCADE, null=True,blank=True)
     activity_action = models.CharField(max_length=20)
-    shared_to_profile = models.BooleanField(default=False)
+    shared_to_profile = models.BooleanField(default=False,null=True,blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
