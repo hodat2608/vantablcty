@@ -59,12 +59,8 @@ def post_likes_homepage(request,pk):
     if request.method == 'POST':
         if user in post.post_likes.all():
             post.post_likes.remove(user)
-            activity_action = activity_history.objects.get(activity_post=post, activity_user=request.user)
-            activity_action.delete()
         else:
             post.post_likes.add(user)
-            activity_action_like = activity_history.objects.create(activity_user=request.user, activity_post=post, activity_action='like')
-            activity_action_like.save()
     return redirect('homepage')
 
 def post_likes_post_profile(request,pk):
@@ -108,8 +104,6 @@ def send_comment(request,pk):
     comment_for_post = get_object_or_404(PostViews,pk=pk)
     comment_for_post_where_id = comment_for_post.id
     if request.method == 'POST':
-        activity_action_comment = activity_history.objects.create(activity_user=request.user, activity_post=comment_for_post, activity_action='comment')
-        activity_action_comment.save()
         form = user_send_comment_form(request.POST, request.FILES)
         if form.is_valid():
             message = form.cleaned_data['message']

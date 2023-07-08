@@ -1,0 +1,3 @@
+select * from vantablack_activity_history;
+select * from vantablack_postviews;
+select * from vantablack_commentviews;
