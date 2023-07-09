@@ -45,3 +45,26 @@ if (input.value.trim() === "") {
     button.disabled = false;
 }
 }
+
+
+var dropdowns = document.getElementsByClassName("dropdown");
+for (var i = 0; i < dropdowns.length; i++) {
+  dropdowns[i].addEventListener("click", function(event) {
+    var dropdownContent = this.querySelector(".dropdown-content");
+    dropdownContent.classList.toggle("show");
+    event.stopPropagation();
+  });
+}
+document.addEventListener("click", function(event) {
+  var dropdownContents = document.getElementsByClassName("dropdown-content");
+  for (var i = 0; i < dropdownContents.length; i++) {
+    var openDropdown = dropdownContents[i];
+    if (openDropdown.classList.contains("show")) {
+      var dropdown = openDropdown.parentNode;
+      var dropdownBtn = dropdown.querySelector(".dropbtn");
+      if (!dropdownBtn.contains(event.target)) {
+        openDropdown.classList.remove("show");
+      }
+    }
+  }
+});

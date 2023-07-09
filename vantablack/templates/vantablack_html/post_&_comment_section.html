@@ -87,15 +87,16 @@
                         <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
                         <small>{{ comment.message }}</small>
                     </div>
-
                     <div class="dropdown">
-                        <i class="fas fa-ellipsis-v"></i>
-                        <div class="dropdown-content">
-                            <p>{% if comment.comment_user == request.user %}
-                                <a href="{% url 'del_comment' comment.id %}">del_comment</a>  
-                            {% endif %}</p>
+                        <span onclick="myFunction('{{ comment.id }}')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
+                        <div id="myDropdown-{{ comment.id }}" class="dropdown-content dropdown-{{ comment.id }}">
+                            {% if comment.comment_user == request.user %}
+                            <a href="{% url 'del_comment' comment.id %}">del_comment</a>
+                            {% endif %}
+                            <a>Modify</a>
+                            <a>report comment</a>
                         </div>
-                    </div>
+                    </div> 
                 </div>
                 <div>
                     {% if comment.massage_image %}

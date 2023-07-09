@@ -29,3 +29,4 @@ urlpatterns = [
     path('user_logout/', views.user_logout, name='user_logout'),
 ]
 
+ 

@@ -86,17 +86,6 @@
                     <hr>
 
                     <div class="btn-group">
-
-                        <!-- <div id="like-container">
-                            <form id="like-form" data-post-id="{{ post.id }}">
-                                {% csrf_token %}
-                                {% if request.user in post.post_likes.all %}
-                                <button type="submit">Liked</button>
-                                {% else %}
-                                <button type="submit">Like</button>
-                                {% endif %}
-                            </form>
-                        </div> -->
                         
                         <form action="{% url 'post_likes_homepage' post.id %}" method="post">
                             {% csrf_token %}
