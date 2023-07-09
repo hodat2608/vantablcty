@@ -190,9 +190,8 @@ ul {
 .post-actions__publish {
   width: 120px;
 
-  background-color: #008391;
-  color: #fff;
-
+  background-color: #ffffff;
+  color: rgb(4, 4, 4);
   border-radius: 1.5em;
 }
 
@@ -251,7 +250,34 @@ ul {
   padding: 10px;
   margin-bottom: 10px;
 }
-
+.comment-card1 {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  width: auto;
+  max-width: 100%;
+  display: inline-block;
+}
+.hello {
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 0;
+  width: auto;
+  max-width: 100%;
+  display: inline-block;
+}
+.hello h1 {
+  margin-top: 0;
+}
+.hello h1 img {
+  border-radius: 20%;
+  border: #000000;
+}
+.hello:last-child {
+  margin-bottom: 0; /* Loại bỏ khoảng cách dưới của phần tử .hello cuối cùng */
+}
 .comment-cad h5 {
   margin-bottom: 10px;
   text-align: left;
@@ -265,7 +291,6 @@ ul {
 .comment-cad img {
   width: 100px;
 }
-
 
 .form1 input[type=text] {
   width: 80%;
@@ -285,22 +310,7 @@ ul {
   .form1 input[type=text]:focus {
   width: 80%;
   }
-
-.form2 input[type=text] {
-  width: 100%;
-  box-sizing: border-box;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: white;
-  background-image: url('searchicon.png');
-  background-position: 10px 10px; 
-  background-repeat: no-repeat;
-  padding: 40px 40px 40px 40px;
-  -webkit-transition: width 0.4s ease-in-out;
-  transition: width 0.4s ease-in-out;
-  }
-  
+/* quantrong */
   .btnn {
   background-color: transparent;
   border: none;
@@ -314,6 +324,7 @@ ul {
   box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
   font-weight: 500;
   }
+/* quantrong */
 
 .widget-post1 {
   width: auto;
@@ -385,6 +396,43 @@ ul {
   padding: 10px 10px 25px 10px;
   border: none;
   resize: none;
+}
+
+.dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      padding: 12px 16px;
+      z-index: 1;
+      border-radius: 10%;
+      font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+    font-size: inherit;
+    text-align: center;
+    
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+    border-radius: 10%;
+    text-align: center;
+  }
+
+.abc{text-align: center;
+}
+
+  .dua_len_ngang_hang_va_dieu_chinh_khoang_cach {
+  display: flex;
+}
+
+.dua_len_ngang_hang_va_dieu_chinh_khoang_cach > div {
+  margin-right: 10px;
+}
+
+.dua_len_ngang_hang_va_dieu_chinh_khoang_cach > div:last-child {
+  margin-right: 0; 
 }
    </style>
 </head>

@@ -20,8 +20,8 @@
             <div>
                 <div class="form1">
                     <form action="{% url 'search_user' %}" method="get">
-                    <input type="text" name="query" placeholder="Tìm kiếm">
-                    <input class="btnn" type="submit" value="Search">
+                    <input type="text" name="query" placeholder="Tìm kiếm" id="searchInput" oninput="validateInput1()">
+                    <input class="btnn" type="submit" value="Search" id="searchBtn" disabled>
                     </form>
                 </div>
 
@@ -45,7 +45,7 @@
                     {% csrf_token %}
                     <div class="widget-post__content">
                         <label for="post-content" class="sr-only">Share</label>
-                        <textarea name="discription" id="discriptiont" class="widget-post__textarea scroller" placeholder="{{request.user.username}} ơi bạn đang nghĩ gì thế? "></textarea>
+                        <textarea name="discription" class="widget-post__textarea scroller" placeholder="{{request.user.username}} ơi bạn đang nghĩ gì thế? " id="createbox" oninput="validateInput2()"></textarea>
                     </div>
                     <div class="widget-post__actions post--actions">
                         <div class="post-actions__attachments">
@@ -60,7 +60,7 @@
                         </div>
                         <div class="post-actions__widget">
                             {% csrf_token %}
-                            <button type="submit" class="btn post-actions__publish">publish</button>
+                            <button type="submit" class="btnn" id="createbox_btn" disabled >publish</button>
                         </div>
                     </div>             
                 </form>

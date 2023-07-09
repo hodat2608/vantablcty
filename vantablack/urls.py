@@ -4,14 +4,21 @@ from . import views
 
 urlpatterns = [
     path('homepage/', views.homepage, name= 'homepage'),
+    path('post_likes_homepage/<str:pk>/', views.post_likes_homepage, name = 'post_likes_homepage'),
+
+
     path('post_profile/<str:pk>/', views.profile_post, name = 'post_profile'),
     path('create_post/', views.create_post, name = 'create_post'),
+
     path('del_post/<str:pk>/', views.del_post, name = 'del_post'),
 
-    path('post_likes_homepage/<str:pk>/', views.post_likes_homepage, name = 'post_likes_homepage'),
+    path('del_comment/<str:pk>/', views.del_comment, name = 'del_comment'),
+
+
     path('post_likes_post_profile/<str:pk>/', views.post_likes_post_profile, name = 'post_likes_post_profile'),
 
-     path('post_comment_section/<str:pk>/', views.post_comment_section, name = 'post_comment_section'),
+    path('post_comment_section/<str:pk>/', views.post_comment_section, name = 'post_comment_section'),
+    path('post_like_post_comment_section/<str:pk>/', views.post_like_post_comment_section, name = 'post_like_post_comment_section'),
 
      path('send_comment/<str:pk>/', views.send_comment, name = 'send_comment'),
 

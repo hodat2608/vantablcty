@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from django.shortcuts import render
 from django.http import HttpResponse 
-from .models import PostViews, CommentViews , User, ProfileUser, activity_history
+from .models import PostViews, CommentViews , User, ProfileUser
 from django.shortcuts import get_object_or_404, render
 from .forms import user_post_form,user_send_comment_form
 from django.shortcuts import redirect
@@ -24,16 +24,54 @@ import csv
 from django.db.models import Q
 from django.http import JsonResponse
 
+
+def homepage(request,):
+    posts = PostViews.objects.all()
+    context = {'posts' : posts,}
+    return render(request, 'homepage.html', context)
+
+def post_likes_homepage(request,pk):
+    post = PostViews.objects.get(pk=pk)
+    user = request.user
+    if request.method == 'POST':
+        if user in post.post_likes.all():
+            post.post_likes.remove(user)
+        else:
+            post.post_likes.add(user)
+    return redirect('homepage')
+
 def profile_post(request,pk):
     all_posts = PostViews.objects.filter(post_user_id=pk)
     profile_user_id = ProfileUser.objects.get(user_id=pk) 
     context = {'all_posts' : all_posts,'profile_user_id':profile_user_id }
     return render(request, 'vantablack_html/profile_post.html', context)
 
-def homepage(request,):
-    posts = PostViews.objects.all()
-    context = {'posts' : posts,}
-    return render(request, 'homepage.html', context)
+def post_likes_post_profile(request,pk):
+    post = PostViews.objects.get(pk=pk)
+    post_user = post.post_user_id
+    user = request.user
+    if request.method == 'POST':
+        if user in post.post_likes.all():
+            post.post_likes.remove(user)
+        else:
+            post.post_likes.add(user)
+    return redirect('post_profile',pk=post_user)
+
+def post_comment_section(request,pk):
+    post_comment_section_id = get_object_or_404(PostViews,pk=pk)
+    return render(request, 'vantablack_html/post_&_comment_section.html', {'post_comment_section_id' : post_comment_section_id},)
+
+
+def post_like_post_comment_section(request,pk):
+    post_like_post_comment_section_id = get_object_or_404(PostViews,pk=pk)
+    user = request.user
+    if request.method == 'POST':
+        if user in post_like_post_comment_section_id.post_likes.all():
+            post_like_post_comment_section_id.post_likes.remove(user)
+        else:
+            post_like_post_comment_section_id.post_likes.add(user)
+    return redirect('post_comment_section',post_like_post_comment_section_id.id)
+
 
 def create_post(request):
     if request.method == 'POST':
@@ -53,26 +91,6 @@ def del_post(request,pk):
     del_post.delete()
     return redirect('post_profile',del_post.post_user_id)
 
-def post_likes_homepage(request,pk):
-    post = PostViews.objects.get(pk=pk)
-    user = request.user
-    if request.method == 'POST':
-        if user in post.post_likes.all():
-            post.post_likes.remove(user)
-        else:
-            post.post_likes.add(user)
-    return redirect('homepage')
-
-def post_likes_post_profile(request,pk):
-    post = PostViews.objects.get(pk=pk)
-    post_user = post.post_user_id
-    user = request.user
-    if request.method == 'POST':
-        if user in post.post_likes.all():
-            post.post_likes.remove(user)
-        else:
-            post.post_likes.add(user)
-    return redirect('post_profile',pk=post_user)
 
 def search_user(request):
     posts = PostViews.objects.all()
@@ -90,15 +108,6 @@ def search_user(request):
             context = {'posts': posts} 
         return render(request, 'homepage.html', context)
 
-def post_comment_section(request,pk):
-    post_comment_section_id = get_object_or_404(PostViews,pk=pk)
-    user = request.user
-    if request.method == 'POST':
-        if user in post_comment_section_id.post_likes.all():
-            post_comment_section_id.post_likes.remove(user)
-        else:
-            post_comment_section_id.post_likes.add(user)
-    return render(request, 'vantablack_html/post_&_comment_section.html', {'post_comment_section_id' : post_comment_section_id},)
 
 def send_comment(request,pk):
     comment_for_post = get_object_or_404(PostViews,pk=pk)
@@ -115,6 +124,13 @@ def send_comment(request,pk):
     else: 
         form = user_send_comment_form()
     return render(request, 'reddot_html/post_&_comment_section.html', {'form' : form},)
+
+def del_comment(request,pk):
+    del_comment_id = CommentViews.objects.get(pk=pk)
+    del_comment_id.delete()
+    del_comment_of_post = del_comment_id.post_comment_id
+    return redirect('post_comment_section',del_comment_of_post)
+
 
 def user_signup(request):
     if request.method == 'POST':

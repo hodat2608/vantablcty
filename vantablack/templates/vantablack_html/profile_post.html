@@ -88,7 +88,7 @@
                 <form action="{% url 'post_likes_post_profile' post.id %}" method="post">
                     {% csrf_token %}
                     {% if request.user in post.post_likes.all %}
-                        <button type="submit">Hate</button>
+                        <button type="submit">Liked</button>
                     {% else %}
                         <button type="submit">Like</button>
                     {% endif %}

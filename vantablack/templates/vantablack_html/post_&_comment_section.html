@@ -26,11 +26,11 @@
         </div>
 
         <div class="btn-group"> 
-            <!-- like and Hate -->
-            <form action="{% url 'post_comment_section' post_comment_section_id.id %}" method="post">
+            <!-- like and Liked -->
+            <form action="{% url 'post_like_post_comment_section' post_comment_section_id.id %}" method="post">
                 {% csrf_token %}
                 {% if request.user in post_comment_section_id.post_likes.all %}
-                  <button type="submit">Hate</button>
+                  <button type="submit">Liked</button>
                 {% else %}
                   <button type="submit">Like</button>
                 {% endif %}
@@ -55,7 +55,7 @@
                 {% csrf_token %}
                 <div class="widget-post__content">
                     <label for="post-content" class="sr-only">Share</label>
-                    <textarea name="message" id="message" class="widget-post__textarea1 scroller" placeholder="..."></textarea>
+                    <textarea name="message" class="widget-post__textarea1 scroller" placeholder="..." id="commentbox" oninput="validateInput3()"></textarea>
                 </div>
                 <div class="widget-post__actions1 post--actions1">
                     <div class="post-actions__attachments">
@@ -70,7 +70,7 @@
                     </div>
                     <div class="post-actions__widget">
                         {% csrf_token %}
-                        <button type="submit" class="btn post-actions__publish">Comment</button>
+                        <button type="submit" class="btnn" id="commentbox_btn" disabled >Comment</button>
                     </div>                  
                 </div>
             </form>
@@ -81,13 +81,29 @@
         <div class="comment-cad">
             <!-- comment section -->
             {% for comment in post_comment_section_id.commentviews_set.all %}
-                <div class="comment-cad">
-                    <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
-                    <small>{{ comment.message }}</small>
+            <div class="hello">
+                <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
+                    <div class="comment-card1">
+                        <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
+                        <small>{{ comment.message }}</small>
+                    </div>
+
+                    <div class="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                        <div class="dropdown-content">
+                            <p>{% if comment.comment_user == request.user %}
+                                <a href="{% url 'del_comment' comment.id %}">del_comment</a>  
+                            {% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
                     {% if comment.massage_image %}
                         <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
                     {% endif %}
-                </div>
+                </div>     
+            </div>
+            <br>
             {% endfor %}
         </div>
 
