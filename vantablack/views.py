@@ -24,12 +24,13 @@ import csv
 from django.db.models import Q
 from django.http import JsonResponse
 
-
+@login_required(login_url='user_login')
 def homepage(request,):
     posts = PostViews.objects.all()
     context = {'posts' : posts,}
     return render(request, 'homepage.html', context)
 
+@login_required(login_url='user_login')
 def post_likes_homepage(request,pk):
     post = PostViews.objects.get(pk=pk)
     user = request.user
@@ -40,12 +41,14 @@ def post_likes_homepage(request,pk):
             post.post_likes.add(user)
     return redirect('homepage')
 
+@login_required(login_url='user_login')
 def profile_post(request,pk):
     all_posts = PostViews.objects.filter(post_user_id=pk)
     profile_user_id = ProfileUser.objects.get(user_id=pk) 
     context = {'all_posts' : all_posts,'profile_user_id':profile_user_id }
     return render(request, 'vantablack_html/profile_post.html', context)
 
+@login_required(login_url='user_login')
 def post_likes_post_profile(request,pk):
     post = PostViews.objects.get(pk=pk)
     post_user = post.post_user_id
@@ -56,12 +59,12 @@ def post_likes_post_profile(request,pk):
         else:
             post.post_likes.add(user)
     return redirect('post_profile',pk=post_user)
-
+@login_required(login_url='user_login')
 def post_comment_section(request,pk):
     post_comment_section_id = get_object_or_404(PostViews,pk=pk)
     return render(request, 'vantablack_html/post_&_comment_section.html', {'post_comment_section_id' : post_comment_section_id},)
 
-
+@login_required(login_url='user_login')
 def post_like_post_comment_section(request,pk):
     post_like_post_comment_section_id = get_object_or_404(PostViews,pk=pk)
     user = request.user
@@ -72,7 +75,7 @@ def post_like_post_comment_section(request,pk):
             post_like_post_comment_section_id.post_likes.add(user)
     return redirect('post_comment_section',post_like_post_comment_section_id.id)
 
-
+@login_required(login_url='user_login')
 def create_post(request):
     if request.method == 'POST':
         form = user_post_form(request.POST, request.FILES)
@@ -86,12 +89,13 @@ def create_post(request):
         form = user_post_form()
     return render(request, 'vantablack_html/create_post.html', {'form': form})
 
+@login_required(login_url='user_login') 
 def del_post(request,pk):
     del_post = get_object_or_404(PostViews,pk=pk)
     del_post.delete()
     return redirect('post_profile',del_post.post_user_id)
 
-
+@login_required(login_url='user_login')
 def search_user(request):
     posts = PostViews.objects.all()
     if request.method == 'GET':
@@ -108,7 +112,7 @@ def search_user(request):
             context = {'posts': posts} 
         return render(request, 'homepage.html', context)
 
-
+@login_required(login_url='user_login')
 def send_comment(request,pk):
     comment_for_post = get_object_or_404(PostViews,pk=pk)
     comment_for_post_where_id = comment_for_post.id
@@ -125,6 +129,7 @@ def send_comment(request,pk):
         form = user_send_comment_form()
     return render(request, 'reddot_html/post_&_comment_section.html', {'form' : form},)
 
+@login_required(login_url='user_login')
 def del_comment(request,pk):
     del_comment_id = CommentViews.objects.get(pk=pk)
     del_comment_id.delete()

@@ -23,7 +23,7 @@ class PostViews(models.Model):
     post_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     discription =  models.TextField(max_length=1000000, blank=True,null=True)
     post_image = models.ImageField(upload_to='images/', null=True,blank=True)
-    post_likes = models.ManyToManyField(User, related_name='post_likes',null=True,blank=True)
+    post_likes = models.ManyToManyField(User, related_name='post_likes',blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -39,7 +39,7 @@ class CommentViews(models.Model):
     post_comment = models.ForeignKey(PostViews, on_delete=models.CASCADE, null=True)
     message = models.TextField(max_length=1000000,blank=True,null=True)
     massage_image = models.ImageField(upload_to='images/', null=True,blank=True)
-    comment_likes = models.ManyToManyField(User, related_name='comment_likes',null=True,blank=True)
+    comment_likes = models.ManyToManyField(User, related_name='comment_likes',blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     class Meta:
@@ -54,7 +54,7 @@ class Repply_commentviews(models.Model):
     rep_commentviews = models.ForeignKey(CommentViews, on_delete=models.CASCADE, null=True)
     rep_message = models.TextField(max_length=1000000,null=True,blank=True)
     rep_mess_image = models.ImageField(upload_to='images/', null=True,blank=True)
-    rep_comment_likes = models.ManyToManyField(User, related_name='rep_comment_likes',null=True,blank=True)
+    rep_comment_likes = models.ManyToManyField(User, related_name='rep_comment_likes',blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
