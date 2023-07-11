@@ -86,8 +86,8 @@
                     <hr>
 
                     <div class="btn-group">
-                        
-                        <form action="{% url 'post_likes_homepage' post.id %}" method="post">
+
+                        <form action="{% url 'post_likes_homepage' 0 %}" method="post" id="like-form" data-like-id="{{ post.id }}">
                             {% csrf_token %}
                             {% if request.user in post.post_likes.all %}
                             <button type="submit">Liked</button>
@@ -120,40 +120,34 @@
     </div>
 
 </div>
-{% endblock content %}
 
+<script 
+    src="https://code.jquery.com/jquery-3.5.1.js" 
+    integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+    crossorigin="anonymous">
+</script>
 
-
-
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $("#like-form").submit(function(event) {
-            event.preventDefault();
+$(document).on('submit', '#like-form', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var likeId = form.data('like-id');
 
-            var postId = $(this).data("post-id");
-
-            $.ajax({
-                url: "/post_likes_homepage/" + postId + "/",
-                type: "POST",
-                headers: { "X-CSRFToken": "{{ csrf_token }}" },
-                success: function(response) {
-                    updateLikeButton(postId);
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                }
-            });
-        });
-
-        function updateLikeButton(postId) {
-            var likeButton = $("#like-form button");
-
-            if (likeButton.text() === "Like") {
-                likeButton.text("Liked");
-            } else {
-                likeButton.text("Like");
-            }
-        }
+    $.ajax({
+    type: 'POST',
+    url: '/post_likes_homepage/' + likeId + '/',
+    data: {
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+    },
+    success: function() {
+        location.reload();
+    }
     });
-</script> -->
+});
+</script> 
+
+{% endblock %}
+
+
+
+
