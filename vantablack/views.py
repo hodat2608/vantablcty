@@ -2,9 +2,9 @@ from django.shortcuts import render
 
 from django.shortcuts import render
 from django.http import HttpResponse 
-from .models import PostViews, CommentViews , User, ProfileUser
+from .models import PostViews, CommentViews , User, ProfileUser,Repply_commentviews
 from django.shortcuts import get_object_or_404, render
-from .forms import user_post_form,user_send_comment_form
+from .forms import user_post_form,user_send_comment_form,repply_comment_form
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render
@@ -87,7 +87,7 @@ def create_post(request):
             return redirect('homepage')
     else: 
         form = user_post_form()
-    return render(request, 'vantablack_html/create_post.html', {'form': form})
+    return render(request, 'homepage.html', {'form': form})
 
 @login_required(login_url='user_login') 
 def del_post(request,pk):
@@ -135,6 +135,22 @@ def del_comment(request,pk):
     del_comment_id.delete()
     del_comment_of_post = del_comment_id.post_comment_id
     return redirect('post_comment_section',del_comment_of_post)
+
+def repply_comment(request,pk):
+    comment_id = CommentViews.objects.get(pk=pk)
+    comment_id_of_post = comment_id.post_comment_id
+    # repply_for_comment = get_object_or_404(Repply_commentviews,rep_commentviews_id=pk)
+    if request.method == 'POST':
+        form = repply_comment_form(request.POST, request.FILES)
+        if form.is_valid():
+            rep_message = form.cleaned_data['rep_message']
+            rep_mess_image = request.FILES.get('rep_mess_image')
+            repply_all = Repply_commentviews.objects.create(user_rep=request.user,rep_commentviews=comment_id,rep_message=rep_message,rep_mess_image=rep_mess_image)
+            repply_all.save()
+            return redirect('post_comment_section',pk=comment_id_of_post)
+    else: 
+        form = repply_comment_form()
+    return render(request, 'reddot_html/post_&_comment_section.html', {'form' : form},)
 
 
 def user_signup(request):

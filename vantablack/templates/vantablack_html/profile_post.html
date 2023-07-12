@@ -85,7 +85,8 @@
 
             <div class="btn-group">
 
-                <form action="{% url 'post_likes_post_profile' post.id %}" method="post">
+                <!-- <form action="{% url 'post_likes_post_profile' post.id %}" method="post"> -->
+                <form action="{% url 'post_likes_post_profile' 0 %}" method="post" id="like-form" data-like-id="{{ post.id }}">
                     {% csrf_token %}
                     {% if request.user in post.post_likes.all %}
                         <button type="submit">Liked</button>
@@ -119,4 +120,30 @@
 
 </div>
     
+<script 
+    src="https://code.jquery.com/jquery-3.5.1.js" 
+    integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+    crossorigin="anonymous">
+</script>
+
+<script>
+$(document).on('submit', '#like-form', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var likeId = form.data('like-id');
+
+    $.ajax({
+    type: 'POST',
+    url: '/post_likes_post_profile/' + likeId + '/',
+    data: {
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+    },
+    success: function() {
+        location.reload();
+    }
+    });
+});
+</script> 
+
+
 {% endblock content %}

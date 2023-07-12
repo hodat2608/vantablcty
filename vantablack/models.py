@@ -46,7 +46,7 @@ class CommentViews(models.Model):
         ordering = ['-updated', '-created']
 
     def __str__(self):
-        return self.comment_user.username
+        return f'{self.comment_user} comment at post: {self.post_comment}'
     
 #repply for comment?
 class Repply_commentviews(models.Model):
@@ -61,7 +61,7 @@ class Repply_commentviews(models.Model):
         ordering = ['-created']
 
     def __str__(self):
-        return self.rep_message
+        return f'{self.user_rep} rep comment of {self.rep_commentviews}'
 
 
 

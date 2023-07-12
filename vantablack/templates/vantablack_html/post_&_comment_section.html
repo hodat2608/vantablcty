@@ -51,7 +51,7 @@
         <hr>
 
         <div class="widget-post1" aria-labelledby="post-header-title">
-            <form action="{% url 'send_comment' post_comment_section_id.id %}" method="post" enctype="multipart/form-data" class="widget-post1__form" aria-label="post widget">
+            <form action="{% url 'send_comment' 0 %}" id="send-comment" data-send-id="{{ post_comment_section_id.id }}" method="post" enctype="multipart/form-data" class="widget-post1__form" aria-label="post widget">
                 {% csrf_token %}
                 <div class="widget-post__content">
                     <label for="post-content" class="sr-only">Share</label>
@@ -82,27 +82,55 @@
             <!-- comment section -->
             {% for comment in post_comment_section_id.commentviews_set.all %}
             <div class="hello">
-                <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
+                <div>
                     <div class="comment-card1">
-                        <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
-                        <small>{{ comment.message }}</small>
-                    </div>
-                    <div class="dropdown">
-                        <span onclick="myFunction('{{ comment.id }}')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
-                        <div id="myDropdown-{{ comment.id }}" class="dropdown-content dropdown-{{ comment.id }}">
-                            {% if comment.comment_user == request.user %}
-                            <a href="{% url 'del_comment' comment.id %}">del_comment</a>
-                            {% endif %}
-                            <a>Modify</a>
-                            <a>report comment</a>
+                        <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
+                            <div>
+                                <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
+                                <small>{{ comment.message }}</small>
+                            </div>
+                            <div class="dropdown">
+                                <span onclick="myFunction('{{ comment.id }}')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
+                                <div id="myDropdown-{{ comment.id }}" class="dropdown-content dropdown-{{ comment.id }}">
+                                    {% if comment.comment_user == request.user %}
+                                    <a href="{% url 'del_comment' comment.id %}">del_comment</a>
+                                    {% endif %}
+                                    <a>Modify</a>
+                                    <a>report comment</a>
+                                </div>
+                            </div> 
                         </div>
-                    </div> 
+                        <div>
+                            {% if comment.massage_image %}
+                                <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <div> 
+                            <button class="mode-font-rep" onclick="toggleCreatePostForm(event)">Phản hồi</button>  
+                            <button class="mode-font-like">Like</button> 
+                        </div>
+                    </div>
                 </div>
                 <div>
-                    {% if comment.massage_image %}
-                        <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
+                    <form action="{% url 'repply_comment' comment.id %}" method="post" id="repply-form" style="display: block;">    
+                        {% csrf_token %}
+                            <td><input type="text" name="rep_message" ></td>
+                            <td><input type="file" name="rep_mess_image" id="id_last_name"></td>
+                            <td><input type="submit" value="Repply"></td>
+                    </form> 
+                </div>
+                <div>
+                    {% if comment.repply_commentviews_set.all %}
+                        {% for rep_comment in comment.repply_commentviews_set.all %}
+                            <div class="comment-cad-repply"> 
+                                    <a>@{{ rep_comment.user_rep.username }}</a><br>
+                                    <a>{{ rep_comment.rep_message }}</a>                                
+                            </div>
+                        {% endfor %}
                     {% endif %}
-                </div>     
+                </div> 
             </div>
             <br>
             {% endfor %}
@@ -117,6 +145,50 @@
         <hr>
     </div>
 
-</div>
-    
+</div> 
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" 
+integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+  crossorigin="anonymous"></script>
+<script>
+var scrollPosition = localStorage.getItem("scrollPosition");
+    if (scrollPosition) {
+        $(window).scrollTop(scrollPosition);
+        localStorage.removeItem("scrollPosition");
+    }
+$(document).on('submit', '#send-comment', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var sendcommentId = form.data('send-id');
+    var message = $("#commentbox").val();
+    var massageImage = $("#upload-image").prop('files')[0];
+    var formData = new FormData();
+    formData.append('message', message);
+    formData.append('massage_image', massageImage);
+    formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+    $.ajax({
+        type: 'POST',
+        url: '/send_comment/' + sendcommentId + '/',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function() {
+            $("#comment-section").append("<p>" + message + "</p>");
+            form.trigger("reset");
+            var scrollPosition = $(window).scrollTop();
+                localStorage.setItem("scrollPosition", scrollPosition);
+            setTimeout(function() {
+                location.reload();
+            }, 50);
+        }
+    });
+});
+
+function toggleCreatePostForm(event) {
+  event.preventDefault();
+  var formDiv = document.getElementById("repply-form");
+  formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
+}
+</script>
+
 {% endblock content %}
