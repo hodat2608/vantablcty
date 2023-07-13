@@ -35,7 +35,7 @@
             <hr>
 
             <div>
-                <button class="create-button" onclick="toggleCreatePostForm(event)">{{request.user.username}} ơi, bạn đang nghĩ gì thế? </button>
+                <button class="create-button" onclick="toggleCreatePostForm1(event)">{{request.user.username}} ơi, bạn đang nghĩ gì thế? </button>
             </div>
             
             <hr>
@@ -128,6 +128,11 @@
 </script>
 
 <script>
+var scrollPosition = localStorage.getItem("scrollPosition");
+if (scrollPosition) {
+    $(window).scrollTop(scrollPosition);
+    localStorage.removeItem("scrollPosition");
+}
 $(document).on('submit', '#like-form', function(e) {
     e.preventDefault();
     var form = $(this);
@@ -140,7 +145,11 @@ $(document).on('submit', '#like-form', function(e) {
         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
     },
     success: function() {
+        var scrollPosition = $(window).scrollTop();
+                localStorage.setItem("scrollPosition", scrollPosition);
+        setTimeout(function() {
         location.reload();
+            }, 50);
     }
     });
 });

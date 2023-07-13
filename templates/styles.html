@@ -276,7 +276,7 @@ ul {
   border: #000000;
 }
 .hello:last-child {
-  margin-bottom: 0; /* Loại bỏ khoảng cách dưới của phần tử .hello cuối cùng */
+  margin-bottom: 0; 
 }
 .comment-cad h5 {
   margin-bottom: 10px;
@@ -472,6 +472,136 @@ ul {
   margin-left: 0 ;
   font-size: 12px;
 }
+.message-form {
+  display: flex;
+  align-items: center;
+}
 
-  </style>
+.form-row {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 3px;
+  flex-grow: 1;
+  width: 150%;
+  margin-left: 50px;
+}
+
+input[type="text"] {
+  flex-grow: 1;
+  border: none;
+  padding: 2px;
+  outline: none;
+  background-color: #f1f1f1;
+}
+
+.upload-icon {
+  display: flex;
+  align-items: center;
+  margin: 0 5px;
+}
+
+.upload-icon input[type="file"] {
+  display: none;
+}
+
+.upload-icon i {
+  margin-right: 5px;
+  color: #999;
+}
+
+.send-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  outline: none;
+}
+
+.send-button i {
+  color: #999;
+}
+
+</style>
+
+<script>
+
+function toggleCreatePostForm1(event) {
+event.preventDefault();
+var formDiv = document.getElementById("create-post-form");
+formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
+}
+
+function toggleCreatePostForm2(event, repply_formId) {
+  event.preventDefault();
+  var formDiv = document.getElementById(repply_formId);
+  formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
+}
+
+function validateInput1() {
+var input = document.getElementById("searchInput");
+var button = document.getElementById("searchBtn");
+if (input.value.trim() === "") {
+    button.disabled = true;
+} else {
+    button.disabled = false;
+}
+}
+
+function validateInput2() {
+    var input = document.getElementById("createbox");
+    var button = document.getElementById("createbox_btn");
+    
+    if (input.value.trim() === "") {
+        button.disabled = true;
+    } else {
+        button.disabled = false;
+    }
+    }
+
+function validateInput3() {
+var input = document.getElementById("commentbox");
+var button = document.getElementById("commentbox_btn");
+
+if (input.value.trim() === "") {
+    button.disabled = true;
+} else {
+    button.disabled = false;
+}
+}
+
+var dropdowns = document.getElementsByClassName("dropdown");
+for (var i = 0; i < dropdowns.length; i++) {
+  dropdowns[i].addEventListener("click", function(event) {
+    var dropdownContent = this.querySelector(".dropdown-content");
+    dropdownContent.classList.toggle("show");
+    event.stopPropagation();
+  });
+}
+
+document.addEventListener("click", function(event) {
+  var dropdownContents = document.getElementsByClassName("dropdown-content");
+  for (var i = 0; i < dropdownContents.length; i++) {
+    var openDropdown = dropdownContents[i];
+    if (openDropdown.classList.contains("show")) {
+      var dropdown = openDropdown.parentNode;
+      var dropdownBtn = dropdown.querySelector(".dropbtn");
+      if (!dropdownBtn.contains(event.target)) {
+        openDropdown.classList.remove("show");
+      }
+    }
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+  var dropdown = document.querySelector(".dropdown");
+  var dropdownContent = document.querySelector(".dropdown-content");
+
+  dropdown.addEventListener("click", function() {
+    dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
+  });
+});
+
+  </script>
 </head>

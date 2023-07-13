@@ -139,7 +139,6 @@ def del_comment(request,pk):
 def repply_comment(request,pk):
     comment_id = CommentViews.objects.get(pk=pk)
     comment_id_of_post = comment_id.post_comment_id
-    # repply_for_comment = get_object_or_404(Repply_commentviews,rep_commentviews_id=pk)
     if request.method == 'POST':
         form = repply_comment_form(request.POST, request.FILES)
         if form.is_valid():

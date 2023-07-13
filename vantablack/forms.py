@@ -16,4 +16,4 @@ class user_send_comment_form(forms.ModelForm):
 class repply_comment_form(forms.ModelForm):
     class Meta:
         model = Repply_commentviews
-        fields = ['rep_message','rep_mess_image']
+        fields = ['rep_message','rep_mess_image',]
