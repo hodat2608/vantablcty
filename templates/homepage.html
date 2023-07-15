@@ -67,53 +67,180 @@
             </div>
             
         </div>
-
+        {% for post in posts%}
         <div>
-            {% for post in posts%}
+            <div class="card">
+                
+                <div>
+                    <a href="{% url 'post_profile' post.post_user_id %}">@{{ post.post_user }}</a>
+                    <h5>{{ post.discription }}</h5>
+                    <h5><img src =" {{ post.post_image.url}}" width="600"></h5>
+                </div>
+                <div class="info-container">
+                    <p>{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
+                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>                     
+                </div>
+                
+                <hr>
 
-                <div class="card">
-                    
-                    <div>
-                        <a href="{% url 'post_profile' post.post_user_id %}">@{{ post.post_user }}</a>
-                        <h5>{{ post.discription }}</h5>
-                        <h5><img src =" {{ post.post_image.url}}" width="600"></h5>
-                    </div>
-                    <div class="info-container">
-                        <p>{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
-                        <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>                     
-                    </div>
-                    
-                    <hr>
+                <div class="btn-group">
 
-                    <div class="btn-group">
+                    <form action="{% url 'post_likes_homepage' 0 %}" method="post" id="like-form" data-like-id="{{ post.id }}">
+                        {% csrf_token %}
+                        {% if request.user in post.post_likes.all %}
+                        <button type="submit">Liked</button>
+                        {% else %}
+                        <button type="submit">Like</button>
+                        {% endif %}
+                    </form>
+                
 
-                        <form action="{% url 'post_likes_homepage' 0 %}" method="post" id="like-form" data-like-id="{{ post.id }}">
-                            {% csrf_token %}
-                            {% if request.user in post.post_likes.all %}
-                            <button type="submit">Liked</button>
-                            {% else %}
-                            <button type="submit">Like</button>
-                            {% endif %}
-                        </form>
-                    
-                        <form action="{% url 'post_comment_section' post.id %}" method="post">
-                            {% csrf_token %}  
-                            <button type="submit">Comment</button>
-                        </form>
+                    <button onclick="toggleCommentPopupWithDelay('{{ post.id }}')">Comment</button>
 
-                        <form action="#" method="post">
-                            {% csrf_token %}  
-                            <button type="submit">Share</button>
-                        </form>
 
-                    </div>
+                    <form action="#" method="post">
+                        {% csrf_token %}  
+                        <button type="submit">Share</button>
+                    </form>
 
                 </div>
 
-            {% endfor %}
+            </div>   
         </div>   
-    </div>
+    
+        <div class="popup" id="comment-popup-{{ post.id }}" style="display: none;">
 
+            <div class="card-shadow">
+                
+                <div>   
+                    <span>@{{ post.post_user }}</span>
+                    <h5>{{ post.discription }}</h5>
+                    <h5><img src =" {{ post.post_image.url}}" width="650" ></h5>
+                </div> 
+        
+                <div class="info-container">
+                    <p style="margin-right: 10px;">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize  }}</p>
+                    <p>{{ post.commentviews_set.count }} comment{{ post.commentviews_set.count|pluralize }}</p>
+                </div>
+        
+                <div class="btn-group"> 
+                    <form action="{% url 'post_like_post_comment_section' post.id %}" method="post">
+                        {% csrf_token %}
+                        {% if request.user in post.post_likes.all %}
+                        <button type="submit">Liked</button>
+                        {% else %}
+                        <button type="submit">Like</button>
+                        {% endif %}
+                    </form>
+                    <form action="#">
+                        {% csrf_token %}  
+                        <button type="submit">Comment</button>
+                    </form>
+                    <form action="#" method="post">
+                        {% csrf_token %}  
+                        <button type="submit">Share</button>
+                    </form>  
+                </div>
+        
+                <hr>
+        
+                <div class="widget-post1" aria-labelledby="post-header-title">
+                    <form action="{% url 'send_comment' 0 %}" id="send-comment" data-send-id="{{ post.id }}" method="post" enctype="multipart/form-data" class="widget-post1__form" aria-label="post widget">
+                        {% csrf_token %}
+                        <div class="widget-post__content">
+                            <label for="post-content" class="sr-only">Share</label>
+                            <textarea name="message" class="widget-post__textarea1 scroller" placeholder="..." id="commentbox" oninput="validateInput3()"></textarea>
+                        </div>
+                        <div class="widget-post__actions1 post--actions1">
+                            <div class="post-actions__attachments">
+                                <button type="button" class="btn post-actions__upload attachments--btn">
+                                    {% csrf_token %}
+                                    <label for="upload-image" class="post-actions__label">
+                                    <i class="fa fa-upload" aria-hidden="true"></i> 
+                                    image
+                                    </label>
+                                </button>
+                                <input type="file" name="massage_image" id="upload-image" multiple>
+                            </div>
+                            <div class="post-actions__widget">
+                                {% csrf_token %}
+                                <button type="submit" class="btnn" id="commentbox_btn" disabled >Comment</button>
+                            </div>                  
+                        </div>
+                    </form>
+                </div>
+        
+                <hr> 
+        
+                <div class="comment-cad">
+                    {% for comment in post.commentviews_set.all %}
+                    <div class="hello">
+                        <div class="comment-card1">
+                            <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
+                                <div>
+                                    <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
+                                    <small>{{ comment.message }}</small>
+                                </div>
+                                <div class="dropdown">
+                                    <span onclick="myFunction('{{ comment.id }}')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
+                                    <div id="myDropdown-{{ comment.id }}" class="dropdown-content dropdown-{{ comment.id }}">
+                                        {% if comment.comment_user == request.user %}
+                                        <a href="{% url 'del_comment' comment.id %}">del_comment</a>
+                                        {% endif %}
+                                        <a>Modify</a>
+                                        <a>report comment</a>
+                                    </div>
+                                </div> 
+                            </div>
+                            <div>
+                                {% if comment.massage_image %}
+                                    <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            <button class="mode-font-rep" onclick="toggleCreatePostForm2(event,'repply-form-{{ comment.id }}')">Phản hồi</button>  
+                            <button class="mode-font-like">Like</button> 
+                        </div>
+                        <div class="message-form">
+                            <form action="{% url 'repply_comment' comment.id %}" method="post" id="repply-form-{{ comment.id }}" style="display: none;" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <input type="text" name="rep_message" placeholder="Type your message">
+                                    <label for="rep_mess_image" class="upload-icon">
+                                        <input type="file" name="rep_mess_image" id="rep_mess_image" multiple>
+                                        <i class="fas fa-file-image"></i>
+                                    </label>
+                                    <button type="submit" class="send-button">
+                                    <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div> 
+                        <div>
+                            {% if comment.repply_commentviews_set.all %}
+                                {% for rep_comment in comment.repply_commentviews_set.all %}
+                                    <div class="comment-cad-repply"> 
+                                        <h5><a href=" {% url 'post_profile' rep_comment.user_rep_id %}">@{{ rep_comment.user_rep.username }}</a></h5>
+                                        <a>{{ rep_comment.rep_message }}</a>   
+                                        <div>
+                                            {% if rep_comment.rep_mess_image %}
+                                                <h1><img src="{{ rep_comment.rep_mess_image.url }}" width="100" height="100"></h1>
+                                            {% endif %}
+                                        </div>                           
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div> 
+                    </div>
+                    <br>
+                    {% endfor %}
+                </div>      
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
     <div>
         <h3>Đang hoạt động</h3>
         <hr>
@@ -128,11 +255,11 @@
 </script>
 
 <script>
+
 var scrollPosition = localStorage.getItem("scrollPosition");
 if (scrollPosition) {
     $(window).scrollTop(scrollPosition);
-    localStorage.removeItem("scrollPosition");
-}
+    localStorage.removeItem("scrollPosition");}
 $(document).on('submit', '#like-form', function(e) {
     e.preventDefault();
     var form = $(this);
@@ -153,6 +280,59 @@ $(document).on('submit', '#like-form', function(e) {
     }
     });
 });
+
+
+$(document).on('submit', '#send-comment', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var sendcommentId = form.data('send-id');
+    var message = $("#commentbox").val();
+    var massageImage = $("#upload-image").prop('files')[0];
+    var formData = new FormData();
+    formData.append('message', message);
+    formData.append('massage_image', massageImage);
+    formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+    $.ajax({
+        type: 'POST',
+        url: '/send_comment/' + sendcommentId + '/',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function() {
+            $("#comment-section").append("<p>" + message + "</p>");
+            form.trigger("reset");
+            var scrollPosition = $(window).scrollTop();
+                localStorage.setItem("scrollPosition", scrollPosition);
+            setTimeout(function() {
+                location.reload();
+            }, 50);
+        }
+    });
+});
+
+
+var currentPostID = null;
+function toggleCommentPopupWithDelay(postID) {
+    if (currentPostID !== postID) {
+        closeCommentPopup();
+        currentPostID = postID;
+        setTimeout(function() {
+            var popup = document.getElementById("comment-popup-" + postID);
+            popup.style.display = "block";
+        }, 300);
+    } else {
+        closeCommentPopup();
+        currentPostID = null;
+    }
+}
+function closeCommentPopup() {
+    if (currentPostID !== null) {
+        var popup = document.getElementById("comment-popup-" + currentPostID);
+        popup.style.display = "none";
+        currentPostID = null;
+    }
+}
+
 </script> 
 
 {% endblock %}

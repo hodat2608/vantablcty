@@ -62,7 +62,8 @@ def post_likes_post_profile(request,pk):
 @login_required(login_url='user_login')
 def post_comment_section(request,pk):
     post_comment_section_id = get_object_or_404(PostViews,pk=pk)
-    return render(request, 'vantablack_html/post_&_comment_section.html', {'post_comment_section_id' : post_comment_section_id},)
+    # return render(request, 'vantablack_html/post_&_comment_section.html', {'post_comment_section_id' : post_comment_section_id},)
+    return render(request, 'homepage.html', {'post_comment_section_id' : post_comment_section_id},)
 
 @login_required(login_url='user_login')
 def post_like_post_comment_section(request,pk):
