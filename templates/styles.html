@@ -475,6 +475,7 @@ ul {
 .message-form {
   display: flex;
   align-items: center;
+  margin-left: -20px;
 }
 
 .form-row {
@@ -571,37 +572,34 @@ if (input.value.trim() === "") {
 }
 }
 
-var dropdowns = document.getElementsByClassName("dropdown");
-for (var i = 0; i < dropdowns.length; i++) {
-  dropdowns[i].addEventListener("click", function(event) {
-    var dropdownContent = this.querySelector(".dropdown-content");
+function toggleDropdownContent(dropdown) {
+    var dropdownContent = dropdown.querySelector(".dropdown-content");
     dropdownContent.classList.toggle("show");
-    event.stopPropagation();
-  });
 }
-
+// Event listener for clicking the dropdown
 document.addEventListener("click", function(event) {
-  var dropdownContents = document.getElementsByClassName("dropdown-content");
-  for (var i = 0; i < dropdownContents.length; i++) {
-    var openDropdown = dropdownContents[i];
-    if (openDropdown.classList.contains("show")) {
-      var dropdown = openDropdown.parentNode;
-      var dropdownBtn = dropdown.querySelector(".dropbtn");
-      if (!dropdownBtn.contains(event.target)) {
-        openDropdown.classList.remove("show");
-      }
-    }
-  }
+    var dropdowns = document.getElementsByClassName("dropdown");
+    Array.from(dropdowns).forEach(function(dropdown) {
+        var dropdownContent = dropdown.querySelector(".dropdown-content");
+        var dropdownBtn = dropdown.querySelector(".dropbtn");
+        if (dropdownBtn.contains(event.target)) {
+            toggleDropdownContent(dropdown);
+        } else {
+            dropdownContent.classList.remove("show");
+        }
+    });
 });
-
+// Event listener for DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function() {
-  var dropdown = document.querySelector(".dropdown");
-  var dropdownContent = document.querySelector(".dropdown-content");
-
-  dropdown.addEventListener("click", function() {
-    dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
-  });
+    var dropdowns = document.getElementsByClassName("dropdown");
+    Array.from(dropdowns).forEach(function(dropdown) {
+        dropdown.addEventListener("click", function(event) {
+            event.stopPropagation();
+            toggleDropdownContent(dropdown);
+        });
+    });
 });
+
 
   </script>
 </head>

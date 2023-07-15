@@ -110,7 +110,7 @@
                     <button class="mode-font-like">Like</button> 
                 </div>
                 <div class="message-form">
-                    <form action="{% url 'repply_comment' comment.id %}" method="post" id="repply-form-{{ comment.id }}" style="display: none;">   
+                    <form action="{% url 'repply_comment' comment.id %}" method="post" id="repply-form-{{ comment.id }}" style="display: none;" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-row">
                             <input type="text" name="rep_message" placeholder="Type your message">
@@ -132,7 +132,7 @@
                                 <a>{{ rep_comment.rep_message }}</a>   
                                 <div>
                                     {% if rep_comment.rep_mess_image %}
-                                        <h1><img src="{{ rep_comment.rep_mess_image.url }}" width="100"></h1>
+                                        <h1><img src="{{ rep_comment.rep_mess_image.url }}" width="100" height="100"></h1>
                                     {% endif %}
                                 </div>                           
                             </div>
