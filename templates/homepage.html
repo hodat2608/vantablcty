@@ -74,7 +74,7 @@
                 <div>
                     <a href="{% url 'post_profile' post.post_user_id %}">@{{ post.post_user }}</a>
                     <h5>{{ post.discription }}</h5>
-                    <h5><img src =" {{ post.post_image.url}}" width="600"></h5>
+                    <img src =" {{ post.post_image.url}}" width="600">
                 </div>
                 <div class="info-container">
                     <p>{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
@@ -152,22 +152,22 @@
                         {% csrf_token %}
                         <div class="widget-post__content">
                             <label for="post-content" class="sr-only">Share</label>
-                            <textarea name="message" class="widget-post__textarea1 scroller" placeholder="..." id="commentbox_1" oninput="validateInput3()"></textarea>
+                            <textarea name="message" class="widget-post__textarea1 scroller" placeholder="..." id="message" onkeyup="requesttext()"></textarea>
                         </div>
                         <div class="widget-post__actions1 post--actions1">
                             <div class="post-actions__attachments">
                                 <button type="button" class="btn post-actions__upload attachments--btn">
                                     {% csrf_token %}
-                                    <label for="upload-image" class="post-actions__label">
+                                    <label for="massage_image" class="post-actions__label">
                                     <i class="fa fa-upload" aria-hidden="true"></i> 
                                     image
                                     </label>
                                 </button>
-                                <input type="file" name="massage_image" id="upload-image" multiple>
+                                <input type="file" name="massage_image" id="massage_image" multiple>
                             </div>
                             <div class="post-actions__widget">
                                 {% csrf_token %}
-                                <button type="submit" class="btnn" id="commentbox_btn_1" >Comment</button>
+                                <button type="submit" class="btnn" id="submitButton">Comment</button>
                             </div>                  
                         </div>
                     </form>
@@ -279,7 +279,7 @@ $(document).on('submit', '#like-form', function(e) {
                 localStorage.setItem("scrollPosition", scrollPosition);
         setTimeout(function() {
         location.reload();
-            }, 50);
+            }, 10);
     }
     });
 });
@@ -303,7 +303,7 @@ $(document).on('submit', '#like-popup-form', function(e) {
 
             setTimeout(function() {
                 location.reload();
-            }, 50);
+            }, 10);
         }
     });
 });
@@ -344,16 +344,19 @@ function closeCommentPopup() {
 }
 function closePopupAndReload() {
     closeCommentPopup();
-    location.reload(); 
+    setTimeout(function() {
+        location.reload();
+    }, 10);
 }
-
 
 $(document).on('submit', '#send-comment', function(e) {
     e.preventDefault();
     var form = $(this);
     var sendcommentId = form.data('send-id');
-    var message = $("#commentbox").val();
-    var massageImage = $("#upload-image").prop('files')[0];
+    var popup_q = document.getElementById("comment-popup-" + sendcommentId);
+    var popupScrollPosition_cmt = $(popup_q).scrollTop();
+    var message = form.find('textarea[name="message"]').val();
+    var massageImage = $("#massage_image").prop('files')[0];
     var formData = new FormData();
     formData.append('message', message);
     formData.append('massage_image', massageImage);
@@ -364,11 +367,9 @@ $(document).on('submit', '#send-comment', function(e) {
         data: formData,
         processData: false,
         contentType: false,
-        success: function() {
-            $("#comment-section").append("<p>" + message + "</p>");
-            form.trigger("reset");
-            var scrollPosition = $(window).scrollTop();
-                localStorage.setItem("scrollPosition", scrollPosition);
+        success: function() {  
+            localStorage.setItem("popupScrollPosition_cmt", popupScrollPosition_cmt); 
+            localStorage.setItem("sendcommentId", sendcommentId);
             setTimeout(function() {
                 location.reload();
             }, 50);
@@ -376,16 +377,18 @@ $(document).on('submit', '#send-comment', function(e) {
     });
 });
 
-function validateInput3() {
-    var input = document.getElementById("commentbox_1");
-    var button = document.getElementById("commentbox_btn_1");
-
-    if (input.value.trim() === "") {
-        button.disabled = true;
-    } else {
-        button.disabled = false;
+$(document).ready(function() {
+    var popupScrollPosition_cmt = localStorage.getItem("popupScrollPosition_cmt"); 
+    var sendcommentId = localStorage.getItem("sendcommentId"); 
+    
+    if (popupScrollPosition_cmt && sendcommentId) {
+        var popup = document.getElementById("comment-popup-" + sendcommentId);
+        popup.style.display = "block";
+        popup.scrollTop = popupScrollPosition_cmt; 
+        localStorage.removeItem("popupScrollPosition_cmt"); 
+        localStorage.removeItem("sendcommentId"); 
     }
-    }
+});
 
 </script> 
 

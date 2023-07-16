@@ -116,7 +116,6 @@ def search_user(request):
 @login_required(login_url='user_login')
 def send_comment(request,pk):
     comment_for_post = get_object_or_404(PostViews,pk=pk)
-    comment_for_post_where_id = comment_for_post.id
     if request.method == 'POST':
         form = user_send_comment_form(request.POST, request.FILES)
         if form.is_valid():
@@ -125,10 +124,10 @@ def send_comment(request,pk):
             send_message = CommentViews.objects.create(comment_user=request.user,post_comment=comment_for_post,
                 message=message,massage_image=massage_image)
             send_message.save()
-            return redirect('post_comment_section',pk=comment_for_post_where_id)
+            return redirect('homepage')
     else: 
         form = user_send_comment_form()
-    return render(request, 'reddot_html/post_&_comment_section.html', {'form' : form},)
+    return render(request, 'homepage.html', {'form' : form},)
 
 @login_required(login_url='user_login')
 def del_comment(request,pk):

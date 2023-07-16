@@ -4,22 +4,125 @@
 
 
 
-<div class="home-container">
+<div class="home-container-profile">
 
     <div>
+        <h1></h1>
+    </div>
 
-        <h3> 
-            <h5>{{profile_user_id.full_name}}</h5>
-            <h5>{{profile_user_id.bio}}</h5>
-            <h5>{{profile_user_id.date_birth}}</h5>
-            <h5>{{profile_user_id.email}}</h5>
-            <h5>{{profile_user_id.address}}</h5>
-            <h5>{{profile_user_id.phone_number}}</h5>
-            <h5>{{profile_user_id.date_join}}</h5>  
-        </h3>
+    <div>
+        <div class="card-profile">
+            {% if profile_user_id %}
+            <h3> 
+                <img src =" {{ profile_user_id.avatar.url}}" width="200" height="200">
+                <h3>{{profile_user_id.full_name}}</h3>
+                <p class="formatted-text">{{profile_user_id.bio}}</p>
+                <br>
+                <div >
+                    <button type="button">Follows</button>
+                    <button type="button">Message</button>
+                </div>
+            </h3>
+            {% endif %}
+        </div>
 
-        <hr>
-
+        <div class="card-profile1"> 
+            <div class="hell">
+                <div> 
+                    <p>Full Name: </p>
+                </div>
+                <div>
+                    <p>{{profile_user_id.full_name}}</p>
+                </div>
+            </div>
+            <div class="hell">
+                <div> 
+                    <p>Date of birth: </p>
+                </div>
+                <div>
+                    <p>{{profile_user_id.date_birth}}</p>
+                </div>
+            </div>
+            <div class="hell">
+                <div> 
+                    <p>Email: </p>
+                </div>
+                <div>
+                    <p>{{profile_user_id.email}}</p>
+                </div>
+            </div>
+            <div class="hell">
+                <div> 
+                    <p>Address: </p>
+                </div>
+                <div>
+                    <p>{{profile_user_id.address}}</p>
+                </div>
+            </div>
+            <div class="hell">
+                <div> 
+                    <p>Phone number: </p>
+                </div>
+                <div>
+                    <p>{{profile_user_id.phone_number}}</p>
+                </div>
+            </div>
+            <div class="hell">
+                <div> 
+                    <p>Date join: </p>
+                </div>
+                <div>
+                    <p>{{profile_user_id.date_join}}</p>
+                </div>
+            </div>
+            <br>
+            <div >
+                <button type="button">More information >>></button>
+            </div>
+        </div>
+        <div class="card-profile2">    
+            <div class="hell"> 
+                <div>
+                    <i class="fas fa-globe fa-lg text-warning"></i>
+                </div>
+                <div>
+                    <p class="mb-0">https://mdbootstrap.com</p>
+                </div>
+            </div>
+            <div class="hell"> 
+                <div>
+                    <i class="fab fa-github fa-lg" style="color: #333333;"></i>
+                </div>
+                <div>
+                    <p class="mb-0">https://mdbootstrap.com</p>
+                </div>
+            </div>
+            <div class="hell"> 
+                <div>
+                    <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
+                </div>
+                <div>
+                    <p class="mb-0">https://mdbootstrap.com</p>
+                </div>
+            </div>
+            <div class="hell"> 
+                <div>
+                    <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
+                </div>
+                <div>
+                    <p class="mb-0">https://mdbootstrap.com</p>
+                </div>
+            </div>
+            <div class="hell"> 
+                <div>
+                    <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
+                </div>
+                <div>
+                    <p class="mb-0">https://mdbootstrap.com</p>
+                </div>
+            </div>
+            
+        </div>
     </div>
     
     <div >
@@ -95,7 +198,7 @@
                     {% endif %}
                 </form>
             
-                <form action="{% url 'post_comment_section' post.id %}" method="post">
+                <form action="#" method="post">
                     {% csrf_token %}
                     <button type="submit">Comment</button>
                 </form>
@@ -114,7 +217,6 @@
     <div>
 
         <h3></h3>
-        <hr>
 
     </div>
 
