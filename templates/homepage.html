@@ -45,7 +45,7 @@
                     {% csrf_token %}
                     <div class="widget-post__content">
                         <label for="post-content" class="sr-only">Share</label>
-                        <textarea name="discription" class="widget-post__textarea scroller" placeholder="{{request.user.username}} ơi bạn đang nghĩ gì thế? " id="createbox" oninput="validateInput2()"></textarea>
+                        <textarea name="discription" class="widget-post__textarea scroller" placeholder="{{request.user.username}} ơi bạn đang nghĩ gì thế? " id="createbox_post" oninput="validateInput2()"></textarea>
                     </div>
                     <div class="widget-post__actions post--actions">
                         <div class="post-actions__attachments">
@@ -60,7 +60,7 @@
                         </div>
                         <div class="post-actions__widget">
                             {% csrf_token %}
-                            <button type="submit" class="btnn" id="createbox_btn" disabled >publish</button>
+                            <button type="submit" class="btnn" id="createbox_btn_post" disabled >publish</button>
                         </div>
                     </div>             
                 </form>
@@ -113,7 +113,10 @@
             <div class="card-shadow">
                 
                 <div>   
-                    <span>@{{ post.post_user }}</span>
+                    <div class="hell">
+                        <span>@{{ post.post_user }}</span>
+                        <button onclick="closePopupAndReload()">Đóng</button>
+                    </div>
                     <h5>{{ post.discription }}</h5>
                     <h5><img src =" {{ post.post_image.url}}" width="650" ></h5>
                 </div> 
@@ -124,7 +127,7 @@
                 </div>
         
                 <div class="btn-group"> 
-                    <form action="{% url 'post_like_post_comment_section' post.id %}" method="post">
+                    <form action="{% url 'post_like_post_comment_section' 0 %}" method="post" id="like-popup-form" data-like-id="{{ post.id }}">
                         {% csrf_token %}
                         {% if request.user in post.post_likes.all %}
                         <button type="submit">Liked</button>
@@ -149,7 +152,7 @@
                         {% csrf_token %}
                         <div class="widget-post__content">
                             <label for="post-content" class="sr-only">Share</label>
-                            <textarea name="message" class="widget-post__textarea1 scroller" placeholder="..." id="commentbox" oninput="validateInput3()"></textarea>
+                            <textarea name="message" class="widget-post__textarea1 scroller" placeholder="..." id="commentbox_1" oninput="validateInput3()"></textarea>
                         </div>
                         <div class="widget-post__actions1 post--actions1">
                             <div class="post-actions__attachments">
@@ -164,7 +167,7 @@
                             </div>
                             <div class="post-actions__widget">
                                 {% csrf_token %}
-                                <button type="submit" class="btnn" id="commentbox_btn" disabled >Comment</button>
+                                <button type="submit" class="btnn" id="commentbox_btn_1" >Comment</button>
                             </div>                  
                         </div>
                     </form>
@@ -281,6 +284,69 @@ $(document).on('submit', '#like-form', function(e) {
     });
 });
 
+$(document).on('submit', '#like-popup-form', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var likeId = form.data('like-id');
+    var popup = document.getElementById("comment-popup-" + likeId);
+    var popupScrollPosition = $(popup).scrollTop();
+
+    $.ajax({
+        type: 'POST',
+        url: '/post_like_post_comment_section/' + likeId + '/',
+        data: {
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function() {
+            localStorage.setItem("popupScrollPosition", popupScrollPosition); 
+            localStorage.setItem("likedPostId", likeId); 
+
+            setTimeout(function() {
+                location.reload();
+            }, 50);
+        }
+    });
+});
+
+$(document).ready(function() {
+    var popupScrollPosition = localStorage.getItem("popupScrollPosition"); 
+    var likedPostId = localStorage.getItem("likedPostId"); 
+    
+    if (popupScrollPosition && likedPostId) {
+        var popup = document.getElementById("comment-popup-" + likedPostId);
+        popup.style.display = "block";
+        popup.scrollTop = popupScrollPosition; 
+        localStorage.removeItem("popupScrollPosition"); 
+        localStorage.removeItem("likedPostId"); 
+    }
+});
+
+var currentPostID = null;
+function toggleCommentPopupWithDelay(postID) {
+    if (currentPostID !== postID) {
+        closeCommentPopup();
+        currentPostID = postID;
+        setTimeout(function() {
+            var popup = document.getElementById("comment-popup-" + postID);
+            popup.style.display = "block";
+        }, 300);
+    } else {
+        closeCommentPopup();
+        currentPostID = null;
+    }
+}
+function closeCommentPopup() {
+    if (currentPostID !== null) {
+        var popup = document.getElementById("comment-popup-" + currentPostID);
+        popup.style.display = "none";
+        currentPostID = null;
+    }
+}
+function closePopupAndReload() {
+    closeCommentPopup();
+    location.reload(); 
+}
+
 
 $(document).on('submit', '#send-comment', function(e) {
     e.preventDefault();
@@ -310,28 +376,16 @@ $(document).on('submit', '#send-comment', function(e) {
     });
 });
 
+function validateInput3() {
+    var input = document.getElementById("commentbox_1");
+    var button = document.getElementById("commentbox_btn_1");
 
-var currentPostID = null;
-function toggleCommentPopupWithDelay(postID) {
-    if (currentPostID !== postID) {
-        closeCommentPopup();
-        currentPostID = postID;
-        setTimeout(function() {
-            var popup = document.getElementById("comment-popup-" + postID);
-            popup.style.display = "block";
-        }, 300);
+    if (input.value.trim() === "") {
+        button.disabled = true;
     } else {
-        closeCommentPopup();
-        currentPostID = null;
+        button.disabled = false;
     }
-}
-function closeCommentPopup() {
-    if (currentPostID !== null) {
-        var popup = document.getElementById("comment-popup-" + currentPostID);
-        popup.style.display = "none";
-        currentPostID = null;
     }
-}
 
 </script> 
 

@@ -74,7 +74,7 @@ def post_like_post_comment_section(request,pk):
             post_like_post_comment_section_id.post_likes.remove(user)
         else:
             post_like_post_comment_section_id.post_likes.add(user)
-    return redirect('post_comment_section',post_like_post_comment_section_id.id)
+    return redirect('homepage')
 
 @login_required(login_url='user_login')
 def create_post(request):
