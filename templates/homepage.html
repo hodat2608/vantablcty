@@ -76,24 +76,49 @@
                     <h5>{{ post.discription }}</h5>
                     <img src =" {{ post.post_image.url}}" width="600">
                 </div>
-                <div class="info-container">
-                    <p>{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
-                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>                     
-                </div>
+                
+                    <div>
+                        <div class="info-container" id="thongdiep-{{ post.id }}" data-comment="{{ post.commentviews_set.count }}">
+                            {% if request.user in post.post_likes.all %} 
+                                {% if post.post_likes.count > 0 %}
+                                    <p>Bạn và {{ post.post_likes.count }} người khác đã thích bài viết này</p>
+                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                {% else %} 
+                                    <p>Bạn người khác đã thích bài viết này</p>
+                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                {% endif %}
+                            {% else %}
+                                {% if post.post_likes.count > 0 %}
+                                    <p id="like-count-{{ post.id }}" >{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
+                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>   
+                                {% else %}
+                                    <p>Chưa ai thích bài viết này</p>
+                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>
+                                {% endif %}   
+                            {% endif %}                  
+                        </div>
+                        <!-- <div id="list_like-{{ post.id }}" >  
+                            {% for user in post.post_likes.all %} 
+                                <p>{{user.username}}</p>
+                            {% endfor %}
+                        </div> -->
+                    </div>
                 
                 <hr>
 
                 <div class="btn-group">
 
-                    <form action="{% url 'post_likes_homepage' 0 %}" method="post" id="like-form" data-like-id="{{ post.id }}">
+                    <form action="{% url 'post_likes_homepage' 0 %}" method="post" id="like-form" data-like-id="{{ post.id }}" 
+                        data-liked="{% if request.user in post.post_likes.all %} true {% else %} false {% endif %}">
                         {% csrf_token %}
-                        {% if request.user in post.post_likes.all %}
-                        <button type="submit">Liked</button>
-                        {% else %}
-                        <button type="submit">Like</button>
-                        {% endif %}
+                        <button type="submit" id="like-button-{{ post.id }}">
+                            {% if request.user in post.post_likes.all %}
+                                Liked
+                            {% else %}
+                                Like
+                            {% endif %}
+                        </button>
                     </form>
-                
 
                     <button onclick="toggleCommentPopupWithDelay('{{ post.id }}')">Comment</button>
 
@@ -121,19 +146,22 @@
                     <h5><img src =" {{ post.post_image.url}}" width="650" ></h5>
                 </div> 
         
-                <div class="info-container">
+                <div class="info-container" id="thongdiep1-{{ post.id }}">
                     <p style="margin-right: 10px;">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize  }}</p>
                     <p>{{ post.commentviews_set.count }} comment{{ post.commentviews_set.count|pluralize }}</p>
                 </div>
         
                 <div class="btn-group"> 
-                    <form action="{% url 'post_like_post_comment_section' 0 %}" method="post" id="like-popup-form" data-like-id="{{ post.id }}">
+                    <form action="{% url 'post_like_post_comment_section' 0 %}" method="post" id="like-popup-form" data-like-id-section="{{ post.id }}"
+                    data-liked-section="{% if request.user in post.post_likes.all %} true {% else %} false {% endif %}">
                         {% csrf_token %}
-                        {% if request.user in post.post_likes.all %}
-                        <button type="submit">Liked</button>
-                        {% else %}
-                        <button type="submit">Like</button>
-                        {% endif %}
+                        <button type="submit" id="like-button-section-{{ post.id }}">
+                            {% if request.user in post.post_likes.all %}
+                                Liked
+                            {% else %}
+                                Like
+                            {% endif %}
+                        </button >
                     </form>
                     <form action="#">
                         {% csrf_token %}  
@@ -259,14 +287,12 @@
 
 <script>
 
-var scrollPosition = localStorage.getItem("scrollPosition");
-if (scrollPosition) {
-    $(window).scrollTop(scrollPosition);
-    localStorage.removeItem("scrollPosition");}
 $(document).on('submit', '#like-form', function(e) {
     e.preventDefault();
     var form = $(this);
     var likeId = form.data('like-id');
+    var isLiked = form.data('liked');
+    var count_comment =form.data('comment')
 
     $.ajax({
     type: 'POST',
@@ -274,51 +300,64 @@ $(document).on('submit', '#like-form', function(e) {
     data: {
         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
     },
-    success: function() {
-        var scrollPosition = $(window).scrollTop();
-                localStorage.setItem("scrollPosition", scrollPosition);
-        setTimeout(function() {
-        location.reload();
-            }, 10);
+    success: function(data) {
+        var Liked_button = $('#like-button-'+ likeId);
+        var Liked_count =  $('#like-count-' + likeId);
+        var Liked_user =   $('#list_like-'  + likeId);
+        var thongdiep =  $('#thongdiep-'  + likeId);
+
+        if (data.liked) {
+            Liked_button.text('Liked');
+            form.data('liked',true);
+            thongdiep.text('Bạn đã thích bài viết này')
+        }
+        else {
+            Liked_button.text('Like');
+            form.data('liked',false);
+            thongdiep.text('Bạn đã bỏ thích')
+        };
+        Liked_count.text(data.likes_count + ' like{{ data.likes_count|pluralize }}');
+        Liked_user.empty();
+            for (var i = 0; i < data.all_user_like.length; i++) {
+                Liked_user.append(data.all_user_like[i]);};
     }
     });
 });
+
+
 
 $(document).on('submit', '#like-popup-form', function(e) {
     e.preventDefault();
     var form = $(this);
-    var likeId = form.data('like-id');
-    var popup = document.getElementById("comment-popup-" + likeId);
+    var likeId_1 = form.data('like-id-section');
+    var section_data = form.data('liked-section')
+    var popup = document.getElementById("comment-popup-" + likeId_1);
     var popupScrollPosition = $(popup).scrollTop();
 
     $.ajax({
         type: 'POST',
-        url: '/post_like_post_comment_section/' + likeId + '/',
+        url: '/post_like_post_comment_section/' + likeId_1 + '/',
         data: {
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
         },
-        success: function() {
-            localStorage.setItem("popupScrollPosition", popupScrollPosition); 
-            localStorage.setItem("likedPostId", likeId); 
+        success: function(data) {
+            var liked_button_section = $('#like-button-section-' + likeId_1);
+            var thongdiep1 =  $('#thongdiep1-'  + likeId_1);
 
-            setTimeout(function() {
-                location.reload();
-            }, 10);
+            if (data.liked_section) {
+            liked_button_section.text('Liked');
+            form.data('liked-section',true);
+            thongdiep1.text('Bạn đã thích bài viết này')
+            thongdiep1.append('<br>');
+        }
+        else {
+            liked_button_section.text('Like');
+            form.data('liked-section',false);
+            thongdiep1.text('Bạn đã bỏ thích')
+            thongdiep1.append('<br>');
+        };         
         }
     });
-});
-
-$(document).ready(function() {
-    var popupScrollPosition = localStorage.getItem("popupScrollPosition"); 
-    var likedPostId = localStorage.getItem("likedPostId"); 
-    
-    if (popupScrollPosition && likedPostId) {
-        var popup = document.getElementById("comment-popup-" + likedPostId);
-        popup.style.display = "block";
-        popup.scrollTop = popupScrollPosition; 
-        localStorage.removeItem("popupScrollPosition"); 
-        localStorage.removeItem("likedPostId"); 
-    }
 });
 
 var currentPostID = null;

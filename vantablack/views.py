@@ -37,9 +37,14 @@ def post_likes_homepage(request,pk):
     if request.method == 'POST':
         if user in post.post_likes.all():
             post.post_likes.remove(user)
+            liked = False
         else:
             post.post_likes.add(user)
-    return redirect('homepage')
+            liked = True
+    likes_count = post.post_likes.count()
+    all_user_like = list(post.post_likes.all().values_list('username', flat=True))
+    context = {'liked':liked, 'likes_count':likes_count, 'all_user_like':all_user_like}
+    return JsonResponse(context)
 
 @login_required(login_url='user_login')
 def profile_post(request,pk):
@@ -62,7 +67,6 @@ def post_likes_post_profile(request,pk):
 @login_required(login_url='user_login')
 def post_comment_section(request,pk):
     post_comment_section_id = get_object_or_404(PostViews,pk=pk)
-    # return render(request, 'vantablack_html/post_&_comment_section.html', {'post_comment_section_id' : post_comment_section_id},)
     return render(request, 'homepage.html', {'post_comment_section_id' : post_comment_section_id},)
 
 @login_required(login_url='user_login')
@@ -72,9 +76,12 @@ def post_like_post_comment_section(request,pk):
     if request.method == 'POST':
         if user in post_like_post_comment_section_id.post_likes.all():
             post_like_post_comment_section_id.post_likes.remove(user)
+            liked_section = False
         else:
             post_like_post_comment_section_id.post_likes.add(user)
-    return redirect('homepage')
+            liked_section = True 
+    context = {'liked_section':liked_section}
+    return JsonResponse(context)
 
 @login_required(login_url='user_login')
 def create_post(request):
@@ -134,7 +141,7 @@ def del_comment(request,pk):
     del_comment_id = CommentViews.objects.get(pk=pk)
     del_comment_id.delete()
     del_comment_of_post = del_comment_id.post_comment_id
-    return redirect('post_comment_section',del_comment_of_post)
+    return redirect('homepage')
 
 def repply_comment(request,pk):
     comment_id = CommentViews.objects.get(pk=pk)
