@@ -175,7 +175,7 @@
                 {% if post.post_user == request.user %}
                     <a href="{% url 'del_post' post.id %}" >del post</a>
                 {% endif %}
-                <h5>{{ post.discription }}</h5>
+                <h5 class="formatted-text">{{ post.discription }}</h5>
                 <h5><img src =" {{ post.post_image.url}}" width="600" ></h5>
             </div>
 
