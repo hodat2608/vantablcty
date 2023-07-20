@@ -35,7 +35,13 @@
             <hr>
 
             <div>
-                <button class="create-button" onclick="toggleCreatePostForm1(event)">{{request.user.username}} ơi, bạn đang nghĩ gì thế? </button>
+                <div class="txt">
+                    <a href="{% url 'post_profile' request.user.id %}">
+                        <img class="img123" src="{{ request.user.profileuser.avatar.url }}" width="40">
+                    </a>
+                    <button class="create-button" onclick="toggleCreatePostForm1(event)">{{request.user.username}} ơi, bạn đang nghĩ gì thế? </button>
+                </div>
+                
             </div>
             
             <hr>
@@ -72,19 +78,24 @@
             <div class="card">
                 
                 <div>
-                    <a href="{% url 'post_profile' post.post_user_id %}">@{{ post.post_user }}</a>
+                    <div class="txt">
+                        <a href="{% url 'post_profile' post.post_user_id %}">
+                            <img class="img123" src="{{ post.get_post_user_avatar.url }}" width="40">
+                        </a>
+                        <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
+                    </div>
                     <h5>{{ post.discription }}</h5>
                     <img src =" {{ post.post_image.url}}" width="600">
                 </div>
                 
                     <div>
-                        <div class="info-container" id="thongdiep-{{ post.id }}" data-comment="{{ post.commentviews_set.count }}">
+                        <div class="info-container" data-comment="{{ post.commentviews_set.count }}" id="thongdiep-{{ post.id }}">
                             {% if request.user in post.post_likes.all %} 
-                                {% if post.post_likes.count > 0 %}
-                                    <p>Bạn và {{ post.post_likes.count }} người khác đã thích bài viết này</p>
+                                {% if post.post_likes.count > 1 %}
+                                    <p>Bạn và {{ post.post_likes.count }} người khác thích bài viết này</p>
                                     <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
                                 {% else %} 
-                                    <p>Bạn người khác đã thích bài viết này</p>
+                                    <p>Bạn thích bài viết này</p>
                                     <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
                                 {% endif %}
                             {% else %}
@@ -92,7 +103,7 @@
                                     <p id="like-count-{{ post.id }}" >{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
                                     <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>   
                                 {% else %}
-                                    <p>Chưa ai thích bài viết này</p>
+                                    <p></p>
                                     <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>
                                 {% endif %}   
                             {% endif %}                  
@@ -109,19 +120,20 @@
                 <div class="btn-group">
 
                     <form action="{% url 'post_likes_homepage' 0 %}" method="post" id="like-form" data-like-id="{{ post.id }}" 
-                        data-liked="{% if request.user in post.post_likes.all %} true {% else %} false {% endif %}">
+                        data-liked="{% if request.user in post.post_likes.all %} true {% else %} false {% endif %}"> 
                         {% csrf_token %}
                         <button type="submit" id="like-button-{{ post.id }}">
                             {% if request.user in post.post_likes.all %}
-                                Liked
+                                <a class="my-text">Like</a>
                             {% else %}
                                 Like
                             {% endif %}
                         </button>
                     </form>
 
-                    <button onclick="toggleCommentPopupWithDelay('{{ post.id }}')">Comment</button>
-
+                    <!-- <button onclick="toggleCommentPopupWithDelay('{{ post.id }}')">Comment</button> -->
+                    <button onclick="commentAndRefresh('{{ post.id }}')">Comment</button>
+                    
 
                     <form action="#" method="post">
                         {% csrf_token %}  
@@ -153,11 +165,11 @@
         
                 <div class="btn-group"> 
                     <form action="{% url 'post_like_post_comment_section' 0 %}" method="post" id="like-popup-form" data-like-id-section="{{ post.id }}"
-                    data-liked-section="{% if request.user in post.post_likes.all %} true {% else %} false {% endif %}">
+                    data-liked-section="{% if request.user in post.post_likes.all %} true {% else %} false {% endif %}" >
                         {% csrf_token %}
                         <button type="submit" id="like-button-section-{{ post.id }}">
                             {% if request.user in post.post_likes.all %}
-                                Liked
+                            <a class="my-text">Like</a>
                             {% else %}
                                 Like
                             {% endif %}
@@ -286,6 +298,11 @@
 </script>
 
 <script>
+var scrollPosition = localStorage.getItem("scrollPosition");
+if (scrollPosition) {
+    $(window).scrollTop(scrollPosition);
+    localStorage.removeItem("scrollPosition");
+}
 
 $(document).on('submit', '#like-form', function(e) {
     e.preventDefault();
@@ -307,7 +324,7 @@ $(document).on('submit', '#like-form', function(e) {
         var thongdiep =  $('#thongdiep-'  + likeId);
 
         if (data.liked) {
-            Liked_button.text('Liked');
+            Liked_button.text('Like').css('color', 'blue').css('font-weight', 'bold');
             form.data('liked',true);
             thongdiep.text('Bạn đã thích bài viết này')
         }
@@ -345,7 +362,7 @@ $(document).on('submit', '#like-popup-form', function(e) {
             var thongdiep1 =  $('#thongdiep1-'  + likeId_1);
 
             if (data.liked_section) {
-            liked_button_section.text('Liked');
+            liked_button_section.text('Like').css('color', 'blue');
             form.data('liked-section',true);
             thongdiep1.text('Bạn đã thích bài viết này')
             thongdiep1.append('<br>');
@@ -383,6 +400,8 @@ function closeCommentPopup() {
 }
 function closePopupAndReload() {
     closeCommentPopup();
+    var scrollPosition = $(window).scrollTop();
+    localStorage.setItem("scrollPosition", scrollPosition);
     setTimeout(function() {
         location.reload();
     }, 10);
@@ -428,6 +447,27 @@ $(document).ready(function() {
         localStorage.removeItem("sendcommentId"); 
     }
 });
+
+function commentAndRefresh(postID) {
+    var scrollPosition = $(window).scrollTop();
+    localStorage.setItem("scrollPosition", scrollPosition);
+    setTimeout(function() {
+        location.reload();
+    }, 10);
+    sessionStorage.setItem("currentPostID", postID);
+            }
+    window.onload = function() {
+        var currentPostID = sessionStorage.getItem("currentPostID");
+        if (currentPostID) {
+            sessionStorage.removeItem("currentPostID");
+            setTimeout(function() {
+                var popup = document.getElementById("comment-popup-" + currentPostID);
+                if (popup) {
+                    popup.style.display = "block";
+                }
+            },100);
+        }
+};
 
 </script> 
 

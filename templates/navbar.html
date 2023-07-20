@@ -6,7 +6,13 @@
     </div>
     <div>
         {% if request.user.is_authenticated %}
+        <div class="txt1">
             <h2><a href="{% url 'post_profile' request.user.id %}">@{{ request.user.username }}</a></h2>
+            <a href="{% url 'post_profile' request.user.id %}">
+                <img class="img1234" src="{{ request.user.profileuser.avatar.url }}" width="50">
+            </a>
+        </div>
+            
             <form action="{% url 'user_login' %}" method="get">
                 <input type="submit" value="Logout">
             </form>

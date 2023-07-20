@@ -33,6 +33,11 @@ class PostViews(models.Model):
     def __str__(self):
         return self.discription
     
+    def get_post_user_avatar(self):
+        if self.post_user and hasattr(self.post_user, 'profileuser'):
+            return self.post_user.profileuser.avatar
+        return None
+    
 #repply for post??
 class CommentViews(models.Model):
     comment_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -48,6 +53,11 @@ class CommentViews(models.Model):
     def __str__(self):
         return f'{self.comment_user} comment at post: {self.post_comment}'
     
+    def get_post_user_avatar(self):
+        if self.comment_user and hasattr(self.comment_user, 'profileuser'):
+            return self.comment_user.profileuser.avatar
+        return None
+    
 #repply for comment?
 class Repply_commentviews(models.Model):
     user_rep = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -62,6 +72,11 @@ class Repply_commentviews(models.Model):
 
     def __str__(self):
         return f'{self.user_rep} rep comment of {self.rep_commentviews}'
+    
+    def get_post_user_avatar(self):
+        if self.user_rep and hasattr(self.user_rep, 'profileuser'):
+            return self.user_rep.profileuser.avatar
+        return None
 
 
 
