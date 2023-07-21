@@ -80,7 +80,8 @@ def post_like_post_comment_section(request,pk):
         else:
             post_like_post_comment_section_id.post_likes.add(user)
             liked_section = True 
-    context = {'liked_section':liked_section}
+    likes_count_section = post_like_post_comment_section_id.post_likes.count()
+    context = {'liked_section':liked_section,'likes_count_section':likes_count_section}
     return JsonResponse(context)
 
 @login_required(login_url='user_login')
@@ -104,21 +105,36 @@ def del_post(request,pk):
     return redirect('post_profile',del_post.post_user_id)
 
 @login_required(login_url='user_login')
+# def search_user(request):
+#     posts = PostViews.objects.all()
+#     if request.method == 'GET':
+#         query =  request.GET.get('query')  
+#         if query :
+#             try:
+#                 search_users = User.objects.filter(username__icontains=query)
+#                 context = {'search_users': search_users,'posts':posts}
+#             except User.DoesNotExist:
+#                 return render(request, 'homepage.html', {
+#                     'error': "Không tìm thấy kết quả",
+#                 })
+#         else:
+#             context = {'posts': posts} 
+#         return render(request, 'homepage.html', context)
+
+# new
 def search_user(request):
-    posts = PostViews.objects.all()
     if request.method == 'GET':
-        query =  request.GET.get('query')  
-        if query :
-            try:
-                search_users = User.objects.filter(username__icontains=query)
-                context = {'search_users': search_users,'posts':posts}
-            except User.DoesNotExist:
-                return render(request, 'homepage.html', {
-                    'error': "Không tìm thấy kết quả",
-                })
+        query = request.GET.get('query')  
+        if query.strip() != '':
+            search_users = User.objects.filter(username__icontains=query)
+            result = [{'username': user.username,'profile_url': f'/post_profile/{user.id}/'} for user in search_users] 
+            # result = []
+            # for user in search_users:
+            #     result.append({'username': user.username,'profile_url': f'/post_profile/{user.id}/'}) #cách khác dễ hiểu hơn 
+            return JsonResponse(result, safe=False)
         else:
-            context = {'posts': posts} 
-        return render(request, 'homepage.html', context)
+            return JsonResponse([])
+# end
 
 @login_required(login_url='user_login')
 def send_comment(request,pk):
@@ -138,10 +154,16 @@ def send_comment(request,pk):
 
 @login_required(login_url='user_login')
 def del_comment(request,pk):
-    del_comment_id = CommentViews.objects.get(pk=pk)
-    del_comment_id.delete()
-    del_comment_of_post = del_comment_id.post_comment_id
-    return redirect('homepage')
+    try:
+        del_comment_id = CommentViews.objects.get(pk=pk)
+        del_comment_id.delete()
+        commit=True
+        context = {'commit':commit}
+        return JsonResponse(context,status=200)
+    except CommentViews.DoesNotExist:
+        return JsonResponse({'error': 'Comment not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 def repply_comment(request,pk):
     comment_id = CommentViews.objects.get(pk=pk)

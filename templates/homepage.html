@@ -8,7 +8,7 @@
     
     <div>
 
-        <h3>Danh mục khác</h3>
+        <h3 style="text-align: center;">Danh mục khác</h3>
         <hr>
 
     </div>
@@ -18,7 +18,7 @@
         <div class="card" >
 
             <div>
-                <div class="form1">
+                <!-- <div class="form1">
                     <form action="{% url 'search_user' %}" method="get">
                     <input type="text" name="query" placeholder="Tìm kiếm" id="searchInput" oninput="validateInput1()">
                     <input class="btnn" type="submit" value="Search" id="searchBtn" disabled>
@@ -29,6 +29,12 @@
                     {% for search_user in search_users %}
                     <a href="{% url 'post_profile' search_user.id %}"><span>{{ search_user.username }}</span></a>
                     {% endfor %}
+                </div> -->
+                <form class="form1">
+                    <input  type="text" name="query" placeholder="Tìm kiếm" id="searchInput" oninput="searchUser()"> 
+                </form>
+                <div id="searchResults">
+                    <a data-url="{% url 'post_profile' request.user.id %}"></a>
                 </div>
             </div>
 
@@ -80,31 +86,49 @@
                 <div>
                     <div class="txt">
                         <a href="{% url 'post_profile' post.post_user_id %}">
-                            <img class="img123" src="{{ post.get_post_user_avatar.url }}" width="40">
-                        </a>
-                        <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
+                            <img class="img123" src="{{ post.get_post_user_avatar.url }}" width="40">  
+                        <div class="datesince">
+                            <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
+                            <li>{{post.created|timesince}} ago</li>
+                        </div>
                     </div>
                     <h5 class="formatted-text">{{ post.discription }}</h5>
                     <img src =" {{ post.post_image.url}}" width="600">
                 </div>
                 
                     <div>
-                        <div class="info-container" data-comment="{{ post.commentviews_set.count }}" id="thongdiep-{{ post.id }}">
+                        <div class="info-container" data-comment="{{ post.commentviews_set.count }}">
                             {% if request.user in post.post_likes.all %} 
                                 {% if post.post_likes.count > 1 %}
-                                    <p>Bạn và {{ post.post_likes.count }} người khác thích bài viết này</p>
-                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    <p id="like-count-{{ post.id }}">Bạn và {{ post.post_likes.count }} người khác thích bài viết này</p>
+                                    {% if post.commentviews_set.count >= 1 %}
+                                        <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    {% else %} 
+                                        <p></p>
+                                    {% endif %}    
                                 {% else %} 
-                                    <p>Bạn thích bài viết này</p>
-                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    <p id="like-count-{{ post.id }}" >Bạn thích bài viết này</p>
+                                    {% if post.commentviews_set.count >= 1 %}
+                                        <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    {% else %} 
+                                        <p></p>
+                                    {% endif %}
                                 {% endif %}
                             {% else %}
                                 {% if post.post_likes.count > 0 %}
-                                    <p id="like-count-{{ post.id }}" >{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
-                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>   
+                                    <p id="like-count-{{ post.id }}">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
+                                    {% if post.commentviews_set.count >= 1 %}
+                                        <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    {% else %} 
+                                        <p></p>
+                                    {% endif %}
                                 {% else %}
-                                    <p></p>
-                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p>
+                                    <p id="like-count-{{ post.id }}"></p>
+                                    {% if post.commentviews_set.count >= 1 %}
+                                        <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    {% else %} 
+                                        <p></p>
+                                    {% endif %}
                                 {% endif %}   
                             {% endif %}                  
                         </div>
@@ -154,13 +178,44 @@
                         <span>@{{ post.post_user }}</span>
                         <button onclick="closePopupAndReload()">Đóng</button>
                     </div>
-                    <h5>{{ post.discription }}</h5>
+                    <h5 class="formatted-text">{{ post.discription }}</h5>
                     <h5><img src =" {{ post.post_image.url}}" width="650" ></h5>
                 </div> 
         
-                <div class="info-container" id="thongdiep1-{{ post.id }}">
-                    <p style="margin-right: 10px;">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize  }}</p>
-                    <p>{{ post.commentviews_set.count }} comment{{ post.commentviews_set.count|pluralize }}</p>
+                <div class="info-container" >
+                    {% if request.user in post.post_likes.all %} 
+                        {% if post.post_likes.count > 1 %}
+                            <p id="like-count-section-{{ post.id }}">Bạn và {{ post.post_likes.count }} người khác thích bài viết này</p>
+                            {% if post.commentviews_set.count >= 1 %}
+                                <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                            {% else %} 
+                                <p></p>
+                            {% endif %} 
+                        {% else %} 
+                            <p id="like-count-section-{{ post.id }}">Bạn thích bài viết này</p>
+                            {% if post.commentviews_set.count >= 1 %}
+                                <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                            {% else %} 
+                                <p></p>
+                            {% endif %} 
+                        {% endif %}
+                    {% else %}
+                        {% if post.post_likes.count > 0 %}
+                            <p id="like-count-section-{{ post.id }}">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
+                            {% if post.commentviews_set.count >= 1 %}
+                                <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                            {% else %} 
+                                <p></p>
+                            {% endif %}   
+                        {% else %}
+                            <p id="like-count-section-{{ post.id }}"></p>
+                            {% if post.commentviews_set.count >= 1 %}
+                                <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                            {% else %} 
+                                <p></p>
+                            {% endif %}
+                        {% endif %}   
+                    {% endif %}   
                 </div>
         
                 <div class="btn-group"> 
@@ -220,15 +275,15 @@
                     <div class="hello">
                         <div class="comment-card1">
                             <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
-                                <div>
+                                <div id="comment-{{ comment.id }}">
                                     <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
-                                    <small>{{ comment.message }}</small>
+                                    <small class="formatted-text">{{ comment.message }}</small>
                                 </div>
                                 <div class="dropdown">
                                     <span onclick="myFunction('{{ comment.id }}')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
                                     <div id="myDropdown-{{ comment.id }}" class="dropdown-content dropdown-{{ comment.id }}">
                                         {% if comment.comment_user == request.user %}
-                                        <a href="{% url 'del_comment' comment.id %}">del_comment</a>
+                                        <a href="{% url 'del_comment' comment.id %}" onclick="deleteComment('{{ comment.id }}')" >del_comment</a>
                                         {% endif %}
                                         <a>Modify</a>
                                         <a>report comment</a>
@@ -265,7 +320,7 @@
                                 {% for rep_comment in comment.repply_commentviews_set.all %}
                                     <div class="comment-cad-repply"> 
                                         <h5><a href=" {% url 'post_profile' rep_comment.user_rep_id %}">@{{ rep_comment.user_rep.username }}</a></h5>
-                                        <a>{{ rep_comment.rep_message }}</a>   
+                                        <a class="formatted-text">{{ rep_comment.rep_message }}</a>   
                                         <div>
                                             {% if rep_comment.rep_mess_image %}
                                                 <h1><img src="{{ rep_comment.rep_mess_image.url }}" width="100" height="100"></h1>
@@ -285,7 +340,7 @@
     </div>
     
     <div>
-        <h3>Đang hoạt động</h3>
+        <h3 style="text-align: center;">Đang hoạt động</h3>
         <hr>
     </div>
 
@@ -326,14 +381,21 @@ $(document).on('submit', '#like-form', function(e) {
         if (data.liked) {
             Liked_button.text('Like').css('color', 'blue').css('font-weight', 'bold');
             form.data('liked',true);
-            thongdiep.text('Bạn đã thích bài viết này')
+            if (data.likes_count > 0) {
+                Liked_count.text(data.likes_count + ' like' + (data.likes_count > 1 ? 's' : ''));
+                } else {
+                    Liked_count.text(''); 
+                }
         }
         else {
-            Liked_button.text('Like');
+            Liked_button.text('Like').css('color', 'black').css('font-weight', 'bold');
             form.data('liked',false);
-            thongdiep.text('Bạn đã bỏ thích')
+            if (data.likes_count > 0) {
+                Liked_count.text(data.likes_count + ' like' + (data.likes_count > 1 ? 's' : ''));
+                } else {
+                    Liked_count.text(''); 
+                }
         };
-        Liked_count.text(data.likes_count + ' like{{ data.likes_count|pluralize }}');
         Liked_user.empty();
             for (var i = 0; i < data.all_user_like.length; i++) {
                 Liked_user.append(data.all_user_like[i]);};
@@ -359,19 +421,26 @@ $(document).on('submit', '#like-popup-form', function(e) {
         },
         success: function(data) {
             var liked_button_section = $('#like-button-section-' + likeId_1);
-            var thongdiep1 =  $('#thongdiep1-'  + likeId_1);
+            var liked_count_section = $('#like-count-section-' + likeId_1);
 
             if (data.liked_section) {
             liked_button_section.text('Like').css('color', 'blue');
             form.data('liked-section',true);
-            thongdiep1.text('Bạn đã thích bài viết này')
-            thongdiep1.append('<br>');
+            if (data.likes_count_section > 0) {
+                liked_count_section.text(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
+                } else {
+                    liked_count_section.text(''); 
+                }   
         }
         else {
-            liked_button_section.text('Like');
+            liked_button_section.text('Like').css('color', 'black');
             form.data('liked-section',false);
-            thongdiep1.text('Bạn đã bỏ thích')
-            thongdiep1.append('<br>');
+            if (data.likes_count_section > 0) {
+                liked_count_section.text(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
+                } else {
+                    liked_count_section.text(''); 
+                }
+           
         };         
         }
     });
@@ -468,6 +537,55 @@ function commentAndRefresh(postID) {
             },100);
         }
 };
+
+function searchUser() {
+    var query = document.getElementById("searchInput").value;
+    var searchResultsDiv = document.getElementById("searchResults");
+    if (!query) {
+        searchResultsDiv.innerHTML = "";
+        return;
+    }
+    $.ajax({
+        type: 'GET',
+        url: '/search_user/',
+        data: { query: query },
+        success: function(data) {
+            var URL = $("#searchResults a").data("url");
+            var resultsHTML = ""; 
+            resultsHTML += "<br><li>Kết quả tìm kiếm: </li><br>"
+            for (var i = 0; i < data.length; i++) {
+                
+                resultsHTML += '<a class="testjs" href="' + data[i].profile_url + '">' + data[i].username + '</a><br>';
+            }
+            searchResultsDiv.innerHTML = resultsHTML; 
+        },
+        error: function() {
+            searchResultsDiv.innerHTML = "<p>Đã xảy ra lỗi khi tìm kiếm</p>";
+        }
+    });
+}
+
+function deleteComment(commentId) {
+    $.ajax({
+        type: 'POST',
+        url: '/del_comment/' + commentId + '/',
+        data: {
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(data) {
+            if (data.commit) {
+                // Xóa comment khỏi DOM nếu xóa thành công
+                $('#comment-' + commentId).remove();
+            } else {
+                // Xử lý thông báo nếu xóa thất bại
+                alert('Không thể xóa comment: ' + data.error);
+            }
+        },
+        error: function() {
+            alert('Có lỗi xảy ra khi gửi yêu cầu xóa comment');
+        }
+    });
+}
 
 </script> 
 
