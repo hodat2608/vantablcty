@@ -37,11 +37,11 @@ body {
     }
 /* home card      */
 .card {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 3px 8px 8px 3px rgba(0, 0, 0, 0.2);
     max-width: 700px;
     margin: 20px auto;
     padding: 16px;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     border-radius: 5px;
     }   
 .card h5 {
@@ -296,10 +296,6 @@ ul {
   color: #555;
 }
 
-.comment-cad img {
-  width: 100px;
-}
-
 .form1 input[type=text] {
   width: 100%;
   box-sizing: border-box;
@@ -487,7 +483,7 @@ ul {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 2px 8px 2px 8px;
-    margin-left: 30px  ;
+    margin-left: 50px  ;
     font-size: 12px;
 }
 .mode-font-like{ 
@@ -573,19 +569,26 @@ input[type="text"] {
 }
 .card-shadow {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    max-width: 680px;
+    max-width: 700px;
     margin: 20px auto; 
     padding: 16px;
     background-color: #ffffff;
-    border-radius: 5px;
+    border-radius: 15px;
     position: relative;
     top: 10%;
 }
+.card-shadow h5 {
+      font-size: 17px;
+      color: #333;
+      font-weight: normal;
+      margin-left: 10px;
+      margin-top: 10px;
+    }
 .hell{ 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1px;
+  gap: 10px;
 }
 /* card-profile */
 
@@ -728,20 +731,30 @@ a{
     margin: 0;
     padding: 0;
 }
+.img12 {
+  height:35px;
+  width:35px;
+  border: #666;
+  border-radius : 50px;
+  margin-right: 10px;
+}
 
 .img123 {
-  height:40px;
+  height:45px;
+  width:45px;
   border: #666;
   border-radius : 50px;
   margin-right: 10px;
 }
 .img1234 {
   height:50px;
+  width: 50px;
   border: #666;
   border-radius : 50px;
   margin-right: 20px;
-  gap: 10px;
+  gap:1px;
 }
+
 .txt {
   display: flex;
   align-items: center;
@@ -782,7 +795,8 @@ a{
   }  
 .card-sharepost-inner{
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 700px;
+  max-width: 100%;
+  max-height: 60%;
   margin: 20px;
   padding: 16px;
   background-color: #ebebeb;
@@ -806,7 +820,8 @@ a{
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   z-index: 90000; 
-  max-height: 100%; /* Đặt chiều cao tối đa cho phần card popup */
+  max-height: 90%;
+  max-width: 80%; /* Đặt chiều cao tối đa cho phần card popup */
   overflow: auto; 
   }
 
@@ -823,6 +838,19 @@ a{
 .scroller::-webkit-scrollbar {
   display: none;}
 
+.helli {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Đối với nút (button) */
+.helli button {
+  margin-left: 450px; /* Đẩy nút sát lề phải */
+}
+
+.comment-avatar{
+  display: flex;
+}
 
 </style>
 

@@ -24,6 +24,10 @@ urlpatterns = [
 
     path('repply_comment/<str:pk>/', views.repply_comment, name = 'repply_comment'),
 
+    path('share_post_views/<str:pk>/', views.share_post_views, name = 'share_post_views'),
+
+    
+
     path('search_user/', views.search_user, name = 'search_user'),
 
     path('user_signup/', views.user_signup, name='user_signup'),

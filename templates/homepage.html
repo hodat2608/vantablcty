@@ -43,7 +43,7 @@
             <div>
                 <div class="txt">
                     <a href="{% url 'post_profile' request.user.id %}">
-                        <img class="img123" src="{{ request.user.profileuser.avatar.url }}" width="40">
+                        <img class="img123" src="{{ request.user.profileuser.avatar.url }}">
                     </a>
                     <button class="create-button" onclick="toggleCreatePostForm1(event)">{{request.user.username}} ơi, bạn đang nghĩ gì thế? </button>
                 </div>
@@ -86,14 +86,13 @@
                 <div>
                     <div class="txt">
                         <a href="{% url 'post_profile' post.post_user_id %}">
-                            <img class="img123" src="{{ post.get_post_user_avatar.url }}" width="40">  
+                            <img class="img123" src="{{ post.get_post_user_avatar.url }}">  
                         <div class="datesince">
                             <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
-                            <li>{{post.created|timesince}} ago</li>
+                            <li>{{post.created|timesince}} ago at {{ post.formatted_created_time}}</li>
                         </div>
                     </div>
                     <h5 class="formatted-text">{{ post.discription }}</h5>
-                    <hr>
                     <img src =" {{ post.post_image.url}}" width="600">
                 </div>
                 
@@ -103,32 +102,32 @@
                             {% if post.post_likes.count > 1 %}
                                 <p id="like-count-{{ post.id }}">Bạn và {{ post.post_likes.count }} người khác thích bài viết này</p>
                                 {% if post.commentviews_set.count >= 1 %}
-                                    <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
                                 {% else %} 
-                                    <p></p>
+                                    <p>.</p>
                                 {% endif %}    
                             {% else %} 
                                 <p id="like-count-{{ post.id }}" >Bạn thích bài viết này</p>
                                 {% if post.commentviews_set.count >= 1 %}
-                                    <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
                                 {% else %} 
-                                    <p></p>
+                                    <p>.</p>
                                 {% endif %}
                             {% endif %}
                         {% else %}
                             {% if post.post_likes.count > 0 %}
                                 <p id="like-count-{{ post.id }}">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
                                 {% if post.commentviews_set.count >= 1 %}
-                                    <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
                                 {% else %} 
-                                    <p></p>
+                                    <p>.</p>
                                 {% endif %}
                             {% else %}
                                 <p id="like-count-{{ post.id }}"></p>
                                 {% if post.commentviews_set.count >= 1 %}
-                                    <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
+                                    <p>{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
                                 {% else %} 
-                                    <p></p>
+                                    <p>.</p>
                                 {% endif %}
                             {% endif %}   
                         {% endif %}                  
@@ -166,19 +165,20 @@
            
         
             <div class="card-sharepost_popup" id="share-card-{{ post.id }}" style="display:none;"> 
-                <form>
+                <form action="{% url 'share_post_views' 0 %}" method="post" id="share-form" data-share-id="{{ post.id }}">
+                    {% csrf_token %}
                     <div class="txt">
                         <a href="{% url 'post_profile' request.user.id %}">
-                            <img class="img123" src="{{ request.user.profileuser.avatar.url }}" width="40">
+                            <img class="img123" src="{{ request.user.profileuser.avatar.url }}">
                         <a href="{% url 'post_profile' request.user.id %}">{{request.user.username}}</a>
                     </div>
                     
-                    <textarea id="share_discription" class="share-discription scroller" placeholder="say something about this post "></textarea>
+                    <textarea name='discription_sh' id="discription_sh" class="share-discription scroller" placeholder="say something about this post "></textarea>
                     
                     <div class="card-sharepost-inner"> 
                         <div class="txt">
                             <a href="{% url 'post_profile' post.post_user_id %}">
-                            <img class="img123" src="{{ post.get_post_user_avatar.url }}" width="40">  
+                            <img class="img123" src="{{ post.get_post_user_avatar.url }}">  
                             <div class="datesince">
                                 <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
                                 <li>{{post.created|timesince}} ago</li>
@@ -198,10 +198,23 @@
                 <div class="card-shadow">
                     
                     <div>   
-                        <div class="hell">
+                        <!-- <div class="hell">
                             <span>@{{ post.post_user }}</span>
                             <button onclick="closePopupAndReload()">Đóng</button>
+                        </div> -->
+
+                        <div class="txt">
+                            <a href="{% url 'post_profile' post.post_user_id %}">
+                                <img class="img123" src="{{ post.get_post_user_avatar.url }}">  
+                            <div class="datesince">
+                                <div class="helli">
+                                    <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
+                                    <button onclick="closePopupAndReload()">Đóng</button>
+                                </div>
+                                <li>{{post.created|timesince}} ago</li>
+                            </div>
                         </div>
+
                         <h5 class="formatted-text">{{ post.discription }}</h5>
                         <h5><img src =" {{ post.post_image.url}}" width="650" ></h5>
                     </div> 
@@ -298,27 +311,36 @@
                     <div class="comment-cad">
                         {% for comment in post.commentviews_set.all %}
                         <div class="hello">
-                            <div class="comment-card1">
-                                <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
-                                    <div id="comment-{{ comment.id }}">
-                                        <h5><a href=" {% url 'post_profile' comment.comment_user_id %}">@{{comment.comment_user }}</a></h5>
-                                        <small class="formatted-text">{{ comment.message }}</small>
-                                    </div>
-                                    <div class="dropdown">
-                                        <span onclick="myFunction('{{ comment.id }}')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
-                                        <div id="myDropdown-{{ comment.id }}" class="dropdown-content dropdown-{{ comment.id }}">
-                                            {% if comment.comment_user == request.user %}
-                                            <a href="{% url 'del_comment' comment.id %}" onclick="deleteComment('{{ comment.id }}')" >del_comment</a>
-                                            {% endif %}
-                                            <a>Modify</a>
-                                            <a>report comment</a>
-                                        </div>
-                                    </div> 
-                                </div>
+                            <div class="comment-avatar">
                                 <div>
-                                    {% if comment.massage_image %}
-                                        <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
-                                    {% endif %}
+                                    <a href="{% url 'post_profile' comment.comment_user_id %}">
+                                    <img class="img12" src="{{ comment.get_comment_user_avatar.url }}">
+                                </div>
+                                <div class="comment-card1">
+                                    <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
+                                        <div id="comment-{{ comment.id }}">
+                                            
+                                            <div class="txt">
+                                                <a href="{% url 'post_profile' comment.comment_user_id %}">{{comment.comment_user }}</a>
+                                            </div>
+                                            <small class="formatted-text">{{ comment.message }}</small>
+                                        </div>
+                                        <div class="dropdown">
+                                            <span onclick="myFunction('{{ comment.id }}')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
+                                            <div id="myDropdown-{{ comment.id }}" class="dropdown-content dropdown-{{ comment.id }}">
+                                                {% if comment.comment_user == request.user %}
+                                                <a href="{% url 'del_comment' comment.id %}" onclick="deleteComment('{{ comment.id }}')" >del_comment</a>
+                                                {% endif %}
+                                                <a>Modify</a>
+                                                <a>report comment</a>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                    <div>
+                                        {% if comment.massage_image %}
+                                            <h1><img src="{{ comment.massage_image.url }}" width="100"></h1>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             <div>
@@ -376,6 +398,8 @@
     integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
     crossorigin="anonymous">
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
 
 <script>
 var scrollPosition = localStorage.getItem("scrollPosition");
@@ -590,28 +614,6 @@ function searchUser() {
     });
 }
 
-function deleteComment(commentId) {
-    $.ajax({
-        type: 'POST',
-        url: '/del_comment/' + commentId + '/',
-        data: {
-            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
-        },
-        success: function(data) {
-            if (data.commit) {
-                // Xóa comment khỏi DOM nếu xóa thành công
-                $('#comment-' + commentId).remove();
-            } else {
-                // Xử lý thông báo nếu xóa thất bại
-                alert('Không thể xóa comment: ' + data.error);
-            }
-        },
-        error: function() {
-            alert('Có lỗi xảy ra khi gửi yêu cầu xóa comment');
-        }
-    });
-}
-
 function sharePost(postId) {
     var popupCard = document.getElementById('share-card-' + postId);
     popupCard.style.display = 'block';
@@ -630,6 +632,36 @@ document.addEventListener('click', function(event) {
             }
         });
     }
+});
+
+
+$(document).on('submit', '#share-form', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var shareId = form.data('share-id');
+    var discription_sh = form.find('textarea[name="discription_sh"]').val();
+    var formData = new FormData();
+    formData.append('discription_sh', discription_sh);
+    formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+    toastr.options.timeOut = 4000;
+    $.ajax({
+        type: 'POST',
+        url: '/share_post_views/' + shareId + '/',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(data) {  
+            var scrollPosition = $(window).scrollTop();
+            localStorage.setItem("scrollPosition", scrollPosition);
+            if (data.boolean){
+                toastr.success('Đã chia sẻ bài viết lên trang cá nhân của bạn!', 'Thông báo');
+                setTimeout(function() {location.reload(); }, 2000);} 
+            else {
+                toastr.success('Bạn đã chia sẽ bài viết này 1 lần rồi', 'Thông báo');
+                setTimeout(function() {location.reload(); }, 2000);
+            }     
+        }
+    });
 });
 
 </script> 

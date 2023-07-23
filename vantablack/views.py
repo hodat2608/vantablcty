@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from django.shortcuts import render
 from django.http import HttpResponse 
-from .models import PostViews, CommentViews , User, ProfileUser,Repply_commentviews
+from .models import PostViews, CommentViews , User, ProfileUser,Repply_commentviews,share_post
 from django.shortcuts import get_object_or_404, render
 from .forms import user_post_form,user_send_comment_form,repply_comment_form
 from django.shortcuts import redirect
@@ -180,6 +180,23 @@ def repply_comment(request,pk):
         form = repply_comment_form()
     return render(request, 'reddot_html/post_&_comment_section.html', {'form' : form},)
 
+def share_post_views(request,pk):
+    post_id = PostViews.objects.get(pk=pk)
+    user = request.user
+    if request.method == 'POST':
+        if user in post_id.post_shares.all():
+            boolean = False
+        else:
+            post_id.post_shares.add(user)
+            discription_sh = request.POST.get('discription_sh')
+            share_post_1 = share_post(user_share_post=request.user,share_post_id=post_id,discription_sh=discription_sh,) 
+            share_post_1.save()
+            boolean = True
+    share_user_count = post_id.post_shares.count()
+    all_user_share = list(post_id.post_shares.all().values_list('username', flat=True))
+    context = {'boolean':boolean,'share_user_count':share_user_count,'all_user_share':all_user_share,}
+    return JsonResponse(context)
+            
 
 def user_signup(request):
     if request.method == 'POST':

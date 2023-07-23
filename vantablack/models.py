@@ -24,6 +24,7 @@ class PostViews(models.Model):
     discription =  models.TextField(max_length=1000000, blank=True,null=True)
     post_image = models.ImageField(upload_to='images/', null=True,blank=True)
     post_likes = models.ManyToManyField(User, related_name='post_likes',blank=True)
+    post_shares = models.ManyToManyField(User, related_name='post_shares',blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -37,6 +38,9 @@ class PostViews(models.Model):
         if self.post_user and hasattr(self.post_user, 'profileuser'):
             return self.post_user.profileuser.avatar
         return None
+
+    def formatted_created_time(self):
+        return self.created.strftime("%I:%M %p")
     
 #repply for post??
 class CommentViews(models.Model):
@@ -53,7 +57,7 @@ class CommentViews(models.Model):
     def __str__(self):
         return f'{self.comment_user} comment at post: {self.post_comment}'
     
-    def get_post_user_avatar(self):
+    def get_comment_user_avatar(self):
         if self.comment_user and hasattr(self.comment_user, 'profileuser'):
             return self.comment_user.profileuser.avatar
         return None
@@ -77,6 +81,19 @@ class Repply_commentviews(models.Model):
         if self.user_rep and hasattr(self.user_rep, 'profileuser'):
             return self.user_rep.profileuser.avatar
         return None
+    
+class share_post(models.Model):
+    user_share_post = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    share_post_id = models.ForeignKey(PostViews, on_delete=models.CASCADE, null=True)
+    discription_sh = models.TextField(null=True,max_length=1000000, blank= True)
+    share_post_likes = models.ManyToManyField(User, related_name='share_post_like', blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
+
+    def __str__(self):
+        return f'{self.user_share_post} shared {self.share_post_id}'
 
 
 
@@ -128,6 +145,7 @@ class repply_comment_activity(models.Model):
 
     def __str__(self):
         return self.comment_rep_activity
+
 
     
 
