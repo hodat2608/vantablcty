@@ -45,7 +45,7 @@
                     <a href="{% url 'post_profile' request.user.id %}">
                         <img class="img123" src="{{ request.user.profileuser.avatar.url }}">
                     </a>
-                    <button class="create-button" onclick="toggleCreatePostForm1(event)">{{request.user.username}} ơi, bạn đang nghĩ gì thế? </button>
+                    <input class="create-button" onclick="toggleCreatePostForm1(event)" placeholder="bạn đang nghĩ gì thế? " >
                 </div>
                 
             </div>
@@ -92,8 +92,12 @@
                             <li>{{post.created|timesince}} ago at {{ post.formatted_created_time}}</li>
                         </div>
                     </div>
-                    <h5 class="formatted-text">{{ post.discription }}</h5>
-                    <img src =" {{ post.post_image.url}}" width="600">
+                    <div class="setonu">
+                        <h5 class="content-discription" id="content-discription-{{ post.id }}">{{ post.discription }}</h5>
+                        <a class="btn-collapse" id="toggle-btn-{{ post.id }}">Xem thêm</a>
+                    </div>
+                    <br>
+                    <img class="img-post" src =" {{ post.post_image.url}}" width="600">
                 </div>
                 
                 <div>
@@ -425,7 +429,7 @@
                                     <i class="fas fa-file-image"></i>
                                 </label>
                                 <button type="submit" class="send-button">
-                                <i class="fas fa-arrow-right"></i>
+                                    <i class="fas fa-paper-plane"></i>
                                 </button>
                             </div>
                         </form>
@@ -441,8 +445,7 @@
                                 </div>
                                 <div class="comment-card1">
                                     <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
-                                        <div id="comment-{{ comment.id }}">
-                                            
+                                        <div id="comment-{{ comment.id }}">                                           
                                             <div class="txt">
                                                 <a href="{% url 'post_profile' comment.comment_user_id %}">{{comment.comment_user }}</a>
                                             </div>
@@ -486,7 +489,7 @@
                                             <i class="fas fa-file-image"></i>
                                         </label>
                                         <button type="submit" class="send-button">
-                                        <i class="fas fa-arrow-right"></i>
+                                            <i class="fas fa-paper-plane"></i>
                                         </button>
                                     </div>
                                 </form>
@@ -793,6 +796,28 @@ $(document).on('submit', '#share-form', function(e) {
     });
 });
 
+const posts = document.getElementsByClassName("setonu");
+for (let i = 0; i < posts.length; i++) {
+    const post = posts[i];
+    const postID = post.querySelector(".content-discription").id.split("-")[2];
+    const content = document.getElementById("content-discription-" + postID);
+    const toggleBtn = document.getElementById("toggle-btn-" + postID);
+    content.style.maxHeight = "94px"; 
+    if (content.scrollHeight > 94) {
+        toggleBtn.style.display = "inline";
+    } else {
+        toggleBtn.style.display = "none";
+    }
+    toggleBtn.addEventListener("click", function() {
+        if (content.style.maxHeight === "94px") {
+            content.style.maxHeight = content.scrollHeight + "px";
+            toggleBtn.textContent = "Thu gọn";
+        } else {
+            content.style.maxHeight = "94px"; 
+            toggleBtn.textContent = "Xem thêm";
+        }
+    });
+}
 </script> 
 
 {% endblock %}

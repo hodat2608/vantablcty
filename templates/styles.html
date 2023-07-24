@@ -38,7 +38,7 @@ body {
 /* home card      */
 .card {
     box-shadow: 3px 8px 8px 3px rgba(0, 0, 0, 0.2);
-    max-width: 700px;
+    max-width: 600px;
     margin: 20px auto;
     padding: 16px;
     background-color: #ffffff;
@@ -48,20 +48,24 @@ body {
       font-size: 17px;
       color: #333;
       font-weight: normal;
-      margin-left: 10px;
+      margin-left: 0;
       margin-top: 10px;
     }   
 .card p {
       font-size: 16px;
       color: #666;
     }
+
+.img-post{
+  margin-left: -16px;
+}
   
 /* button comment and like   */
 .btn-group button {
     background-color: #ffffff;
     border: none;
     color: black; 
-    padding: 8px 12.5%;
+    padding: 8px 12.2%;
     cursor: pointer; 
     float: left; 
     border-radius: 50px;
@@ -256,12 +260,14 @@ ul {
  
 
 .create-button {
-  background-color: #bbbbbb;
+  background-color: #d6d6d6;
   color: #000000;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 10px 160px;
+  border-radius: 20px;
   cursor: pointer;
+  text-align: left;
+  
 }
 
 /* comment card */
@@ -294,7 +300,7 @@ ul {
   margin-top: 0;
 }
 .hello img {
-  border-radius: 10%;
+  border-radius: 50%;
   border: #000000;
 }
 .hello:last-child {
@@ -314,7 +320,7 @@ ul {
   width: 100%;
   box-sizing: border-box;
   border: 2px solid #ccc;
-  border-radius: 4px;
+  border-radius: 20px;
   font-size: 12px;
   background-color: white;
   background-position: 10px 10px; 
@@ -564,6 +570,7 @@ input[type="text"] {
   display: flex;
   align-items: center;
   margin: 0 5px;
+  cursor: pointer;
 }
 
 .upload-icon input[type="file"] {
@@ -918,6 +925,29 @@ a{
   font-weight: bold;
   color: #5dd693;
 }
+.content-discription {
+  max-height:95px; /* Hiển thị 2/3 nội dung ban đầu */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  margin: 0;
+  white-space: pre-wrap;
+}
+  
+
+.btn-collapse {
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer; 
+  margin: 0;
+  margin-left: 0;   
+}
+.setonu {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  
+}
+
 
 </style>
 
