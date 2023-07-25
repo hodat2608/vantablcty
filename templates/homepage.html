@@ -31,14 +31,16 @@
                     {% endfor %}
                 </div> -->
                 <form class="form1">
-                    <input  type="text" name="query" placeholder="Tìm kiếm" id="searchInput" oninput="searchUser()"> 
+                    <div class="info-search">
+                        <i class="fab fa-github fa-lg" style="color: #333333;font-size:48px;"></i> <input style="margin-left: 5px;" type="text" name="query" placeholder="Tìm kiếm" id="searchInput" oninput="searchUser()">
+                    </div>
                 </form>
                 <div id="searchResults">
                     <a data-url="{% url 'post_profile' request.user.id %}"></a>
                 </div>
             </div>
 
-            <hr>
+           <br>
 
             <div>
                 <div class="txt">
@@ -50,7 +52,7 @@
                 
             </div>
             
-            <hr>
+            
         
             <div class="widget-post" aria-labelledby="post-header-title" id="create-post-form" style="display: none;">
                 <form action="{% url 'create_post' %}" method="post" enctype="multipart/form-data" class="widget-post__form" aria-label="post widget">
@@ -65,7 +67,6 @@
                             {% csrf_token %}
                             <label for="upload-image" class="post-actions__label">
                                 <i class="fa fa-upload" aria-hidden="true"></i> 
-                                upload image
                             </label>
                             </button>
                             <input type="file" name="post_image" id="upload-image" multiple>
@@ -736,8 +737,12 @@ function searchUser() {
             resultsHTML += "<br><li>Kết quả tìm kiếm: </li><br>"
             for (var i = 0; i < data.length; i++) {
                 
-                resultsHTML += '<a class="testjs" href="' + data[i].profile_url + '">' + data[i].username + '</a><br>';
+                // resultsHTML += '<div class="info-search"> <img class="img12345" src="' + data[i].avatar + '">  <a class="testjs" href="' + data[i].profile_url + '">' + data[i].username + '</a> </div> <br>';
+                resultsHTML += '<div class="info-search"> <a href="'+ data[i].profile_url +'"> <img class="img12345" src="' + data[i].avatar + '"></a>  <a class="testjs" href="' + data[i].profile_url + '">' + data[i].username + '</a> </div> <br>';
             }
+            
+                
+            
             searchResultsDiv.innerHTML = resultsHTML; 
         },
         error: function() {
@@ -765,7 +770,6 @@ document.addEventListener('click', function(event) {
         });
     }
 });
-
 
 $(document).on('submit', '#share-form', function(e) {
     e.preventDefault();
@@ -802,22 +806,27 @@ for (let i = 0; i < posts.length; i++) {
     const postID = post.querySelector(".content-discription").id.split("-")[2];
     const content = document.getElementById("content-discription-" + postID);
     const toggleBtn = document.getElementById("toggle-btn-" + postID);
-    content.style.maxHeight = "94px"; 
-    if (content.scrollHeight > 94) {
+
+    const originalHeight = "97px"; // Giá trị max-height ban đầu
+    content.style.maxHeight = originalHeight;
+
+    if (content.scrollHeight > parseInt(originalHeight)) {
         toggleBtn.style.display = "inline";
     } else {
         toggleBtn.style.display = "none";
     }
+
     toggleBtn.addEventListener("click", function() {
-        if (content.style.maxHeight === "94px") {
+        if (content.style.maxHeight === originalHeight) {
             content.style.maxHeight = content.scrollHeight + "px";
             toggleBtn.textContent = "Thu gọn";
         } else {
-            content.style.maxHeight = "94px"; 
+            content.style.maxHeight = originalHeight;
             toggleBtn.textContent = "Xem thêm";
         }
     });
 }
+
 </script> 
 
 {% endblock %}

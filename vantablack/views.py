@@ -50,7 +50,8 @@ def post_likes_homepage(request,pk):
 def profile_post(request,pk):
     all_posts = PostViews.objects.filter(post_user_id=pk)
     profile_user_id = ProfileUser.objects.get(user_id=pk) 
-    context = {'all_posts' : all_posts,'profile_user_id':profile_user_id }
+    share_key = share_post.objects.filter(user_share_post_id=pk)
+    context = {'all_posts' : all_posts,'profile_user_id':profile_user_id,'share_key':share_key}
     return render(request, 'vantablack_html/profile_post.html', context)
 
 @login_required(login_url='user_login')
@@ -127,10 +128,14 @@ def search_user(request):
         query = request.GET.get('query')  
         if query.strip() != '':
             search_users = User.objects.filter(username__icontains=query)
-            result = [{'username': user.username,'profile_url': f'/post_profile/{user.id}/'} for user in search_users] 
-            # result = []
-            # for user in search_users:
-            #     result.append({'username': user.username,'profile_url': f'/post_profile/{user.id}/'}) #cách khác dễ hiểu hơn 
+            #result = [{'username': user.username,'avatar':user.profileuser.avatar.url, 'profile_url': f'/post_profile/{user.id}/'} for user in search_users] 
+            result = []
+            for user in search_users:
+                if hasattr(user, 'profileuser'):
+                    avatar_url = user.profileuser.avatar.url
+                else:
+                    avatar_url = '/media/images/default_avatar.jpg'
+                result.append({'username': user.username,'avatar':avatar_url,'profile_url': f'/post_profile/{user.id}/'}) #cách khác dễ hiểu hơn 
             return JsonResponse(result, safe=False)
         else:
             return JsonResponse([])

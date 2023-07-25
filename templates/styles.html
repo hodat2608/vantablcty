@@ -65,7 +65,7 @@ body {
     background-color: #ffffff;
     border: none;
     color: black; 
-    padding: 8px 12.2%;
+    padding: 8px 12%;
     cursor: pointer; 
     float: left; 
     border-radius: 50px;
@@ -93,6 +93,11 @@ body {
     align-items: center;
     margin-right: 10px;
 }
+.info-search {
+    display: flex;
+    align-items: center;
+}
+
 .left-align {
   text-align: left;
 }
@@ -263,7 +268,7 @@ ul {
   background-color: #d6d6d6;
   color: #000000;
   border: none;
-  padding: 10px 160px;
+  padding: 10px 170px;
   border-radius: 20px;
   cursor: pointer;
   text-align: left;
@@ -317,7 +322,7 @@ ul {
 }
 
 .form1 input[type=text] {
-  width: 100%;
+  width: 90%;
   box-sizing: border-box;
   border: 2px solid #ccc;
   border-radius: 20px;
@@ -331,8 +336,15 @@ ul {
   }
   
   .form1 input[type=text]:focus {
-  width: 100%;
+  width: 90%;
   }
+  #searchInput {
+  padding-left: 30px; /* Khoảng cách giữa icon và nội dung input */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.71 20.29l-5.65-5.65A7.94 7.94 0 0 0 18 10.5a8 8 0 1 0-8 8 7.94 7.94 0 0 0 4.14-1.19l5.65 5.65a1 1 0 0 0 1.42-1.42zM4 10.5a6 6 0 1 1 6 6 6 6 0 0 1-6-6z"/></svg>');
+  background-size: 16px;
+  background-position: 6px center;
+  background-repeat: no-repeat;
+}
 /* quantrong */
   .btnn {
   background-color: rgb(33, 103, 202);
@@ -803,6 +815,17 @@ a{
   margin-right: 20px;
   gap:1px;
 }
+.img12345 {
+  height:40px;
+  width: 40px;
+  border: #666;
+  border-radius : 50px;
+  margin-left: 20px;
+  gap:1px;
+}
+.fes{
+  margin-left: 5px;
+}
 
 .txt {
   display: flex;
@@ -831,7 +854,7 @@ a{
 .testjs {
   display: flex;
   flex-direction: column;
-  margin-left:23px;
+  margin-left:10px;
 }
 
 .card-sharepost{
@@ -849,7 +872,7 @@ a{
   margin: 20px;
   padding: 16px;
   background-color: #ebebeb;
-  border-radius: 5px;
+  border-radius: 15px;
   } 
 .card-sharepost-inner h5 {
   font-size: 17px;
@@ -866,7 +889,7 @@ a{
   transform: translate(-50%, -50%);
   background-color: white;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   z-index: 90000; 
   max-height: 90%;
