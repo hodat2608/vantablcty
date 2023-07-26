@@ -51,7 +51,13 @@ def profile_post(request,pk):
     all_posts = PostViews.objects.filter(post_user_id=pk)
     profile_user_id = ProfileUser.objects.get(user_id=pk) 
     share_key = share_post.objects.filter(user_share_post_id=pk)
-    context = {'all_posts' : all_posts,'profile_user_id':profile_user_id,'share_key':share_key}
+    lst_id =[]
+    for id in share_key:
+        lst_id.append(id.share_post_id_id)
+    print(lst_id)
+    for id in lst_id:
+        post_id_share = PostViews.objects.filter(pk__in=lst_id)
+    context = {'all_posts' : all_posts,'profile_user_id':profile_user_id,'share_key':share_key,'post_id_share':post_id_share}
     return render(request, 'vantablack_html/profile_post.html', context)
 
 @login_required(login_url='user_login')

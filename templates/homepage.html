@@ -106,7 +106,7 @@
                         {% if request.user in post.post_likes.all %} 
                             {% if post.post_likes.count > 1 %}
                                 <div class="left-align">
-                                    <p id="like-count-{{ post.id }}">Bạn và {{ post.post_likes.count }} người khác <i class="fas fa-thumbs-up"></i></p>
+                                    <p class="my-text" id="like-count-{{ post.id }}">Bạn và {{ post.post_likes.count }} người khác <i class="fas fa-thumbs-up"></i></p>
                                 </div>
                                 <div class="right-align">
                                     {% if post.commentviews_set.count >= 1 %}
@@ -122,7 +122,7 @@
                                 </div>  
                             {% else %} 
                                 <div class="left-align">
-                                    <p id="like-count-{{ post.id }}" >Bạn <i class="fas fa-thumbs-up"></i></p>
+                                    <p class="my-text" id="like-count-{{ post.id }}" >Bạn <i class="fas fa-thumbs-up"></i></p>
                                 </div>
                                 <div class="right-align">
                                     {% if post.commentviews_set.count >= 1 %}
@@ -141,7 +141,7 @@
                         {% else %}
                             {% if post.post_likes.count > 0 %}
                                 <div class="left-align">
-                                    <p id="like-count-{{ post.id }}">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }} <i class="fas fa-thumbs-up"></i></p> 
+                                    <p  class="my-text" id="like-count-{{ post.id }}">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }} <i class="fas fa-thumbs-up"></i></p> 
                                 </div>
                                 <div class="right-align">
                                     {% if post.commentviews_set.count >= 1 %}
@@ -157,7 +157,7 @@
                                 </div>
                             {% else %}
                                 <div class="left-align">
-                                    <p id="like-count-{{ post.id }}"></i></p>
+                                    <p  class="my-text" id="like-count-{{ post.id }}"></i></p>
                                 </div>
                                 <div class="right-align">
                                     {% if post.commentviews_set.count >= 1 %}
@@ -191,16 +191,16 @@
                         {% csrf_token %}
                         <button type="submit" id="like-button-{{ post.id }}">
                             {% if request.user in post.post_likes.all %}
-                                <a class="my-text">Like</a>
+                                <a class="my-text"><i class="fas fa-thumbs-up"></i> Like</a>
                             {% else %}
-                                Like
+                            <i class="fas fa-thumbs-up"></i> Like
                             {% endif %}
                         </button>
                     </form>
 
-                    <button onclick="turnoncommentAndRefresh('{{ post.id }}')">Comment</button>
+                    <button  onclick="turnoncommentAndRefresh('{{ post.id }}')"><i class="fas fa-comment"></i> Comment</button>
 
-                    <button type="submit" id="share-button-{{ post.id }}">Share</button>
+                    <button type="submit" id="share-button-{{ post.id }}"> <i class="fas fa-share"></i> Share</button>
 
                 </div>
 
@@ -228,7 +228,7 @@
                             </div>
                         </div>
                         <h5>{{post.discription}}</h5>                       
-                        <h5><img src =" {{ post.post_image.url}}" width="600" ></h5>
+                        <img src =" {{ post.post_image.url}}" width="600">
                     </div>
                     <br>
                     <button class="btnn" type="submit">Share post </button>
@@ -259,7 +259,7 @@
                         </div>
 
                         <h5 class="formatted-text">{{ post.discription }}</h5>
-                        <h5><img src =" {{ post.post_image.url}}" width="650" ></h5>
+                        <img class="img-post-popup" src =" {{ post.post_image.url}}" width="640" >
                     </div> 
             
                     <!-- <div class="info-container" >
@@ -318,7 +318,7 @@
                                 </div>  
                             {% else %} 
                                 <div class="left-align">
-                                    <p id="like-count-section-{{ post.id }}">Bạn <i class="fas fa-thumbs-up"></i></p>
+                                    <p class="my-text" id="like-count-section-{{ post.id }}">Bạn <i class="fas fa-thumbs-up"></i></p>
                                 </div>
                                 <div class="right-align">
                                     {% if post.commentviews_set.count >= 1 %}
@@ -376,20 +376,20 @@
                         <form action="{% url 'post_like_post_comment_section' 0 %}" method="post" id="like-popup-form" data-like-id-section="{{ post.id }}"
                         data-liked-section="{% if request.user in post.post_likes.all %} true {% else %} false {% endif %}" >
                             {% csrf_token %}
-                            <button type="submit" id="like-button-section-{{ post.id }}">
+                            <button type="submit" id="like-button-section-{{ post.id }}"> 
                                 {% if request.user in post.post_likes.all %}
-                                <a class="my-text">Like</a>
+                                <a class="my-text"><i class="fas fa-thumbs-up"></i>Like</a>
                                 {% else %}
-                                    Like
+                                <i class="fas fa-thumbs-up"></i> Like 
                                 {% endif %}
                             </button >
                         </form>
                         <form action="#">
                             {% csrf_token %}  
-                            <button type="submit">Comment</button>
+                            <button type="submit"> <i class="fas fa-comment"></i> Comment</button>
                         </form>
                         
-                        <button type="submit" id="share-button-{{ post.id }}">Share</button>
+                        <button type="submit" id="share-button-{{ post.id }}"> <i class="fas fa-share"></i> Share</button>
                     </div>
             
                     <hr>
@@ -561,16 +561,16 @@ $(document).on('submit', '#like-form', function(e) {
         var thongdiep =  $('#thongdiep-'  + likeId);
 
         if (data.liked) {
-            Liked_button.text('Like').css('color', 'blue').css('font-weight', 'normal');
+            Liked_button.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'blue').css('font-weight', 'normal');
             form.data('liked',true);
             if (data.likes_count > 0) {
-                Liked_count.html(data.likes_count + ' like' + (data.likes_count > 1 ? 's' : '') +'  <i class="fas fa-thumbs-up"></i>');
+                Liked_count.html(data.likes_count + ' like' + (data.likes_count > 1 ? 's' : '') +'  <i class="fas fa-thumbs-up"></i>').css('color', 'blue').css('font-weight', 'normal');
                 } else {
                     Liked_count.text(''); 
                 }
         }
         else {
-            Liked_button.text('Like').css('color', 'black').css('font-weight', 'normal');
+            Liked_button.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'black').css('font-weight', 'normal');
             form.data('liked',false);
             if (data.likes_count > 0) {
                 Liked_count.text(data.likes_count + ' like' + (data.likes_count > 1 ? 's' : ''));
@@ -606,19 +606,19 @@ $(document).on('submit', '#like-popup-form', function(e) {
             var liked_count_section = $('#like-count-section-' + likeId_1);
 
             if (data.liked_section) {
-            liked_button_section.text('Like').css('color', 'blue');
+            liked_button_section.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'blue').css('font-weight', 'normal');
             form.data('liked-section',true);
             if (data.likes_count_section > 0) {
-                liked_count_section.text(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
+                liked_count_section.html(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : '') +' <i class="fas fa-thumbs-up"></i>').css('color', 'blue').css('font-weight', 'normal');
                 } else {
                     liked_count_section.text(''); 
                 }   
         }
         else {
-            liked_button_section.text('Like').css('color', 'black');
+            liked_button_section.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'black');
             form.data('liked-section',false);
             if (data.likes_count_section > 0) {
-                liked_count_section.text(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
+                liked_count_section.html(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
                 } else {
                     liked_count_section.text(''); 
                 }

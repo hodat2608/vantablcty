@@ -160,22 +160,29 @@
         </div>
 
 
-        <div class="card-sharepost_popup"> 
-            <div class="txt">
-                <a href="{% url 'post_profile' request.user.id %}">
-                    <img class="img123" src="{{ request.user.profileuser.avatar.url }}">
-                <a href="{% url 'post_profile' request.user.id %}">{{request.user.username}}</a>
-            </div>
+        
             
-            <div>
-
-            </div> 
-           {% for post in share_key %} 
-                {{ post.discription_sh}}<br>
-            
+            {% for post in post_id_share %}
+                <div class="card-sharepost-profile"> 
+                    <div class="txt">
+                        <a href="{% url 'post_profile' request.user.id %}">
+                            <img class="img123" src="{{ request.user.profileuser.avatar.url }}">
+                        <a href="{% url 'post_profile' request.user.id %}">{{request.user.username}}</a>
+                    </div> 
+                    <div>
+                        {% for discription in post.share_post_set.all %}
+                            {{discription.discription_sh}}
+                        {% endfor %}
+                    </div>
+                    <div class="card-profile-sharepost-inner">
+                        <h5>{{ post.post_user.username }}</h5>
+                        <h5>{{ post.discription }}</h5>
+                        {% if post.post_image %}
+                            <img src="{{ post.post_image.url }}">
+                        {% endif %}
+                    </div>
+                </div>
             {% endfor %}        
-        </div>
-
 
         {% for post in all_posts %}
             <div class="card">
@@ -324,7 +331,7 @@
                             </div>
                         </div>
                         <h5>{{post.discription}}</h5>                       
-                        <h5><img src =" {{ post.post_image.url}}" width="600" ></h5>
+                        <img class="img-post-popup" src =" {{ post.post_image.url}}" width="640" >
                     </div>
                     <br>
                     <button class="btnn" type="submit">Share post </button>
@@ -704,19 +711,19 @@ $(document).on('submit', '#like-popup-form', function(e) {
             var liked_count_section = $('#like-count-section-' + likeId_1);
 
             if (data.liked_section) {
-            liked_button_section.text('Like').css('color', 'blue');
+            liked_button_section.html('Like').css('color', 'blue');
             form.data('liked-section',true);
             if (data.likes_count_section > 0) {
-                liked_count_section.text(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
+                liked_count_section.html(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
                 } else {
                     liked_count_section.text(''); 
                 }   
         }
         else {
-            liked_button_section.text('Like').css('color', 'black');
+            liked_button_section.html('Like').css('color', 'black');
             form.data('liked-section',false);
             if (data.likes_count_section > 0) {
-                liked_count_section.text(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
+                liked_count_section.html(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
                 } else {
                     liked_count_section.text(''); 
                 }
