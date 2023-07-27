@@ -97,7 +97,7 @@ def create_post(request):
         form = user_post_form(request.POST, request.FILES)
         if form.is_valid():
             discription = form.cleaned_data['discription']
-            post_image = request.FILES['post_image']
+            post_image = request.FILES.get('post_image')
             createpost = PostViews.objects.create(post_user=request.user,discription=discription,post_image=post_image,)
             createpost.save()
             return redirect('homepage')
@@ -112,23 +112,6 @@ def del_post(request,pk):
     return redirect('post_profile',del_post.post_user_id)
 
 @login_required(login_url='user_login')
-# def search_user(request):
-#     posts = PostViews.objects.all()
-#     if request.method == 'GET':
-#         query =  request.GET.get('query')  
-#         if query :
-#             try:
-#                 search_users = User.objects.filter(username__icontains=query)
-#                 context = {'search_users': search_users,'posts':posts}
-#             except User.DoesNotExist:
-#                 return render(request, 'homepage.html', {
-#                     'error': "Không tìm thấy kết quả",
-#                 })
-#         else:
-#             context = {'posts': posts} 
-#         return render(request, 'homepage.html', context)
-
-# new
 def search_user(request):
     if request.method == 'GET':
         query = request.GET.get('query')  

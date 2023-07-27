@@ -18,18 +18,6 @@
         <div class="card" >
 
             <div>
-                <!-- <div class="form1">
-                    <form action="{% url 'search_user' %}" method="get">
-                    <input type="text" name="query" placeholder="Tìm kiếm" id="searchInput" oninput="validateInput1()">
-                    <input class="btnn" type="submit" value="Search" id="searchBtn" disabled>
-                    </form>
-                </div>
-
-                <div>
-                    {% for search_user in search_users %}
-                    <a href="{% url 'post_profile' search_user.id %}"><span>{{ search_user.username }}</span></a>
-                    {% endfor %}
-                </div> -->
                 <form class="form1">
                     <div class="info-search">
                         <i class="fab fa-github fa-lg" style="color: #333333;font-size:48px;"></i> <input style="margin-left: 5px;" type="text" name="query" placeholder="Tìm kiếm" id="searchInput" oninput="searchUser()">
@@ -98,7 +86,9 @@
                         <a class="btn-collapse" id="toggle-btn-{{ post.id }}">Xem thêm</a>
                     </div>
                     <br>
-                    <img class="img-post" src =" {{ post.post_image.url}}" width="600">
+                    {% if post.post_image %}
+                        <img class="img-post" src =" {{ post.post_image.url}}" width="600">
+                    {% endif %}
                 </div>
                 
                 <div>
@@ -227,8 +217,11 @@
                                 <li>{{post.created|timesince}} ago</li>
                             </div>
                         </div>
-                        <h5>{{post.discription}}</h5>                       
-                        <img src =" {{ post.post_image.url}}" width="600">
+                        <h5>{{post.discription}}</h5>
+                        {% if post.post_image %}
+                            <img src =" {{ post.post_image.url}}" width="600">
+                        {% endif %}                       
+                        
                     </div>
                     <br>
                     <button class="btnn" type="submit">Share post </button>
@@ -241,11 +234,6 @@
                 <div class="card-shadow">
                     
                     <div>   
-                        <!-- <div class="hell">
-                            <span>@{{ post.post_user }}</span>
-                            <button onclick="closePopupAndReload()">Đóng</button>
-                        </div> -->
-
                         <div class="txt">
                             <a href="{% url 'post_profile' post.post_user_id %}">
                                 <img class="img123" src="{{ post.get_post_user_avatar.url }}">  
@@ -259,44 +247,11 @@
                         </div>
 
                         <h5 class="formatted-text">{{ post.discription }}</h5>
-                        <img class="img-post-popup" src =" {{ post.post_image.url}}" width="640" >
-                    </div> 
-            
-                    <!-- <div class="info-container" >
-                        {% if request.user in post.post_likes.all %} 
-                            {% if post.post_likes.count > 1 %}
-                                <p id="like-count-section-{{ post.id }}">Bạn và {{ post.post_likes.count }} người khác thích bài viết này</p>
-                                {% if post.commentviews_set.count >= 1 %}
-                                    <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
-                                {% else %} 
-                                    <p></p>
-                                {% endif %} 
-                            {% else %} 
-                                <p id="like-count-section-{{ post.id }}">Bạn thích bài viết này</p>
-                                {% if post.commentviews_set.count >= 1 %}
-                                    <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
-                                {% else %} 
-                                    <p></p>
-                                {% endif %} 
-                            {% endif %}
-                        {% else %}
-                            {% if post.post_likes.count > 0 %}
-                                <p id="like-count-section-{{ post.id }}">{{ post.post_likes.count }} like{{ post.post_likes.count|pluralize }}</p> 
-                                {% if post.commentviews_set.count >= 1 %}
-                                    <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
-                                {% else %} 
-                                    <p></p>
-                                {% endif %}   
-                            {% else %}
-                                <p id="like-count-section-{{ post.id }}"></p>
-                                {% if post.commentviews_set.count >= 1 %}
-                                    <p id="like-count-{{ post.id }}">{{ post.commentviews_set.count }} comment{{post.commentviews_set.count|pluralize}}</p> 
-                                {% else %} 
-                                    <p></p>
-                                {% endif %}
-                            {% endif %}   
+                        {% if post.post_image %}
+                            <img class="img-post-popup" src =" {{ post.post_image.url}}" width="640" >
                         {% endif %}   
-                    </div> -->
+                        
+                    </div> 
 
                     <div class="info-container">
                         {% if request.user in post.post_likes.all %} 
@@ -390,36 +345,8 @@
                         </form>
                         
                         <button type="submit" id="share-button-{{ post.id }}"> <i class="fas fa-share"></i> Share</button>
-                    </div>
-            
+                    </div>      
                     <hr>
-            
-                    <!-- <div class="widget-post1" aria-labelledby="post-header-title">
-                        <form action="{% url 'send_comment' 0 %}" id="send-comment" data-send-id="{{ post.id }}" method="post" enctype="multipart/form-data" class="widget-post1__form" aria-label="post widget">
-                            {% csrf_token %}
-                            <div class="widget-post__content">
-                                <label for="post-content" class="sr-only">Share</label>
-                                <textarea name="message" class="widget-post__textarea1 scroller" placeholder="..." id="message" onkeyup="requesttext()"></textarea>
-                            </div>
-                            <div class="widget-post__actions1 post--actions1">
-                                <div class="post-actions__attachments">
-                                    <button type="button" class="btn post-actions__upload attachments--btn">
-                                        {% csrf_token %}
-                                        <label for="massage_image" class="post-actions__label">
-                                        <i class="fa fa-upload" aria-hidden="true"></i> 
-                                        image
-                                        </label>
-                                    </button>
-                                    <input type="file" name="massage_image" id="massage_image" multiple>
-                                </div>
-                                <div class="post-actions__widget">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btnn1" id="submitButton">Comment</button>
-                                </div>                  
-                            </div>
-                        </form>
-                    </div> -->
-
                     <div class="message-form-1">
                         <form action="{% url 'send_comment' 0 %}" id="send-comment" data-send-id="{{ post.id }}" method="post" enctype="multipart/form-data" >
                             {% csrf_token %}
@@ -468,7 +395,9 @@
                                             <div class="dropdown-image">
                                                 <img src="{{ comment.massage_image.url }}" width="150" height="100">
                                                 <div class="dropdown-content-image">
-                                                    <img src="{{ comment.massage_image.url }}" width="500" height="400">
+                                                    {% if comment.massage_image %}
+                                                        <img src="{{ comment.massage_image.url }}" width="500" height="400">
+                                                    {% endif %}                                                    
                                                     <div class="desc">Cinque Terre Unique</div>
                                                 </div>
                                             </div>

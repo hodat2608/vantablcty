@@ -77,7 +77,7 @@ class Repply_commentviews(models.Model):
     def __str__(self):
         return f'{self.user_rep} rep comment of {self.rep_commentviews}'
     
-    def get_post_user_avatar(self):
+    def get_repply_comment_user_avatar(self):
         if self.user_rep and hasattr(self.user_rep, 'profileuser'):
             return self.user_rep.profileuser.avatar
         return None
@@ -94,6 +94,14 @@ class share_post(models.Model):
 
     def __str__(self):
         return f'{self.user_share_post} shared {self.share_post_id}'
+
+    def formatted_created_time(self):
+        return self.created.strftime("%I:%M %p")
+    
+    def get_user_share_post_avatar(self):
+        if self.user_share_post and hasattr(self.user_share_post, 'profileuser'):
+            return self.user_share_post.profileuser.avatar
+        return None
 
 
 
