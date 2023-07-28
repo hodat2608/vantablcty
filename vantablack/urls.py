@@ -16,6 +16,7 @@ urlpatterns = [
 
 
     path('post_likes_post_profile/<str:pk>/', views.post_likes_post_profile, name = 'post_likes_post_profile'),
+    path('sare_post_likes/<str:pk>/', views.sare_post_likes, name = 'sare_post_likes'),
 
     # path('post_comment_section/<str:pk>/', views.post_comment_section, name = 'post_comment_section'),
     path('post_like_post_comment_section/<str:pk>/', views.post_like_post_comment_section, name = 'post_like_post_comment_section'),

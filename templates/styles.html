@@ -63,6 +63,9 @@ body {
 .img-post-popup{
   margin-left: -16px;
 }
+.img-post-share{
+  margin-left: -16px;
+}
 
 .img-post-popup-prfl{
   margin-left: -26px;
@@ -422,18 +425,16 @@ ul {
 }
 
 .widget-post2 {
-  width: 640px;
+  width: 600px;
   min-height: 100px;
   height: 190px;
-
   border: 1px solid #eaeaea;
   border-radius: 6px;
   box-shadow: 0 1px 2px 1px rgba(130, 130, 130, 0.1);
-
   background-color: #fff;
-
   margin: auto;
   overflow: hidden;
+  margin-top: 20px;
 }
 
 .post--actions2 {
@@ -455,6 +456,7 @@ ul {
   padding: 10px 10px 25px 10px;
   border: none;
   resize: none;
+  outline: none;
 }
 
 .dropbtn {
@@ -876,7 +878,7 @@ a{
   }  
 .card-sharepost-inner{
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 640px;
+  max-width: 600px;
   max-height: 60%;
   margin: 20px;
   padding: 16px;
@@ -1004,6 +1006,16 @@ a{
     justify-content: center;
   }
 
+.profile_scroll {
+  max-height: 100vh; 
+  overflow-y: hidden;
+  position: sticky;
+  top: 0;
+  direction: rtl;
+}
+.show-scroll {
+  overflow-y: auto; 
+}
 </style>
 
 <script>

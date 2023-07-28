@@ -42,10 +42,32 @@ class PostViews(models.Model):
     def formatted_created_time(self):
         return self.created.strftime("%I:%M %p")
     
+class share_post(models.Model):
+    user_share_post = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    share_post_id = models.ForeignKey(PostViews, on_delete=models.CASCADE, null=True)
+    discription_sh = models.TextField(null=True,max_length=1000000, blank= True)
+    share_post_likes = models.ManyToManyField(User, related_name='share_post_like', blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
+
+    def __str__(self):
+        return f'{self.user_share_post} shared {self.share_post_id}'
+
+    def formatted_created_time(self):
+        return self.created.strftime("%I:%M %p")
+    
+    def get_user_share_post_avatar(self):
+        if self.user_share_post and hasattr(self.user_share_post, 'profileuser'):
+            return self.user_share_post.profileuser.avatar
+        return None
+    
 #repply for post??
 class CommentViews(models.Model):
     comment_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     post_comment = models.ForeignKey(PostViews, on_delete=models.CASCADE, null=True)
+    share_post_comment = models.ForeignKey(share_post, on_delete=models.CASCADE, null=True)
     message = models.TextField(max_length=1000000,blank=True,null=True)
     massage_image = models.ImageField(upload_to='images/', null=True,blank=True)
     comment_likes = models.ManyToManyField(User, related_name='comment_likes',blank=True)
@@ -82,26 +104,7 @@ class Repply_commentviews(models.Model):
             return self.user_rep.profileuser.avatar
         return None
     
-class share_post(models.Model):
-    user_share_post = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    share_post_id = models.ForeignKey(PostViews, on_delete=models.CASCADE, null=True)
-    discription_sh = models.TextField(null=True,max_length=1000000, blank= True)
-    share_post_likes = models.ManyToManyField(User, related_name='share_post_like', blank=True)
-    created = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ['-created']
-
-    def __str__(self):
-        return f'{self.user_share_post} shared {self.share_post_id}'
-
-    def formatted_created_time(self):
-        return self.created.strftime("%I:%M %p")
-    
-    def get_user_share_post_avatar(self):
-        if self.user_share_post and hasattr(self.user_share_post, 'profileuser'):
-            return self.user_share_post.profileuser.avatar
-        return None
 
 
 

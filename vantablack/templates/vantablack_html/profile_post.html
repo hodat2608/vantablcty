@@ -10,7 +10,7 @@
         <h1></h1>
     </div>
 
-    <div>
+    <div class="profile_scroll">
         <div class="card-profile">
             {% if profile_user_id %}
             <h3> 
@@ -126,7 +126,6 @@
     </div>
     
     <div >
-
         <div class="widget-post2" aria-labelledby="post-header-title">
             <div class="widget-post__header">
                 <h2 class="widget-post__title" id="post-header-title">
@@ -186,14 +185,67 @@
                         </div>
                         <h5>{{ post.discription }}</h5>                       
                         {% if post.post_image %}
-                            <img src="{{ post.post_image.url }}" width="500" height="500">
+                            <img class="img-post-share" src="{{ post.post_image.url }}" width="527" height="500">
                         {% endif %}
                     </div>
-                    <br>
+                    <div>
+                        <div class="info-container">
+                            {% if request.user in item.share_post_likes.all %} 
+                                {% if item.share_post_likes.count > 1 %}
+                                    <div class="left-align">
+                                        <p class="my-text" id="share-like-count-{{ item.id }}">Bạn và {{ item.share_post_likes.count }} người khác <i class="fas fa-thumbs-up"></i></p>
+                                    </div>
+                                    <div class="right-align">
+                                        {% if item.commentviews_set.count >= 1 %}
+                                            <p>{{ item.commentviews_set.count }} comment{{item.commentviews_set.count|pluralize}} <i class="fas fa-comment"></i></p>
+                                        {% else %} 
+                                            <p>.</p>
+                                        {% endif %} 
+                                    </div>  
+                                {% else %} 
+                                    <div class="left-align">
+                                        <p class="my-text" id="share-like-count-{{ item.id }}" >Bạn <i class="fas fa-thumbs-up"></i></p>
+                                    </div>
+                                    <div class="right-align">
+                                        {% if item.commentviews_set.count >= 1 %}
+                                            <p>{{ item.commentviews_set.count }} comment{{item.commentviews_set.count|pluralize}} <i class="fas fa-comment"></i></p> 
+                                        {% else %} 
+                                            <p>.</p>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                
+                            {% else %}
+                                {% if item.share_post_likes.count > 0 %}
+                                    <div class="left-align">
+                                        <p class="my-text" id="share-like-count-{{ item.id }}">{{ item.share_post_likes.count }} like{{ item.share_post_likes.count|pluralize }} <i class="fas fa-thumbs-up"></i></p> 
+                                    </div>
+                                    <div class="right-align">
+                                        {% if item.commentviews_set.count >= 1 %}
+                                            <p>{{ item.commentviews_set.count }} comment{{item.commentviews_set.count|pluralize}} <i class="fas fa-comment"></i></p> 
+                                        {% else %} 
+                                            <p>.</p>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="left-align">
+                                        <p class="my-text" id="share-like-count-{{ item.id }}"></i></p>
+                                    </div>
+                                    <div class="right-align">
+                                        {% if item.commentviews_set.count >= 1 %}
+                                            <p>{{ item.commentviews_set.count }} comment{{item.commentviews_set.count|pluralize}} <i class="fas fa-comment"></i></p> 
+                                        {% else %} 
+                                            <p>.</p>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}   
+                            {% endif %}  
+                        </div>
+                    </div>
                     <hr>
                     <div class="btn-group">
-                        <form action="#" method="post" id="share-like-form" data-share-like-id="{{ item.id }}" 
-                            data-liked="{% if request.user in item.share_post_likes.all %} true {% else %} false {% endif %}"> 
+                        <form action="{% url 'sare_post_likes' 0 %}" method="post" id="share-like-form" data-share-like-id="{{ item.id }}" 
+                            data-share-liked="{% if request.user in item.share_post_likes.all %} true {% else %} false {% endif %}"> 
                             {% csrf_token %}
                             <button type="submit" id="share-like-button-{{ item.id }}">
                                 {% if request.user in item.share_post_likes.all %}
@@ -625,7 +677,7 @@ $(document).on('submit', '#like-form', function(e) {
 
     $.ajax({
     type: 'POST',
-    url: '/post_likes_homepage/' + likeId + '/',
+    url: '/post_likes_post_profile/' + likeId + '/',
     data: {
         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
     },
@@ -659,8 +711,6 @@ $(document).on('submit', '#like-form', function(e) {
     }
     });
 });
-
-
 
 $(document).on('submit', '#like-popup-form', function(e) {
     e.preventDefault();
@@ -696,10 +746,48 @@ $(document).on('submit', '#like-popup-form', function(e) {
                 liked_count_section.html(data.likes_count_section + ' like' + (data.likes_count_section > 1 ? 's' : ''));
                 } else {
                     liked_count_section.text(''); 
-                }
-           
+                } 
         };         
         }
+    });
+});
+
+$(document).on('submit', '#share-like-form', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var sare_likeId = form.data('share-like-id');
+    $.ajax({
+    type: 'POST',
+    url: '/sare_post_likes/' + sare_likeId + '/',
+    data: {
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+    },
+    success: function(data) {
+        var share_Liked_button = $('#share-like-button-'+ sare_likeId);
+        var share_Liked_count =  $('#share-like-count-' + sare_likeId);
+
+        if (data.liked_sh_post) {
+            share_Liked_button.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'blue').css('font-weight', 'normal');
+            form.data('share-liked',true);
+            if (data.likes_count_sh_post > 0) {
+                share_Liked_count.html(data.likes_count_sh_post + ' like' + (data.likes_count_sh_post > 1 ? 's' : '') +'  <i class="fas fa-thumbs-up"></i>').css('color', 'blue').css('font-weight', 'normal');
+                } else {
+                    share_Liked_count.text(''); 
+                }
+        }
+        else {
+            share_Liked_button.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'black').css('font-weight', 'normal');
+            form.data('share-liked',false);
+            if (data.likes_count_sh_post > 0) {
+                share_Liked_count.html(data.likes_count_sh_post + ' like' + (data.likes_count_sh_post > 1 ? 's' : ''));
+                } else {
+                    share_Liked_count.text(''); 
+                }
+        };
+        Liked_user.empty();
+            for (var i = 0; i < data.all_user_like.length; i++) {
+                Liked_user.append(data.all_user_like[i]);};
+    }
     });
 });
 
@@ -901,6 +989,18 @@ for (let i = 0; i < posts.length; i++) {
         }
     });
 }
+
+const cardProfile1 = document.querySelector(".profile_scroll");
+window.addEventListener("scroll", function() {
+  if (window.scrollY > 0) {
+    cardProfile1.classList.add("show-scroll");
+  } else {
+    cardProfile1.classList.remove("show-scroll");
+  }
+});
+
+
+
 </script> 
 
 

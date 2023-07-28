@@ -63,14 +63,34 @@ def profile_post(request,pk):
 @login_required(login_url='user_login')
 def post_likes_post_profile(request,pk):
     post = PostViews.objects.get(pk=pk)
-    post_user = post.post_user_id
     user = request.user
     if request.method == 'POST':
         if user in post.post_likes.all():
             post.post_likes.remove(user)
+            liked = False
         else:
             post.post_likes.add(user)
-    return redirect('post_profile',pk=post_user)
+            liked = True
+    likes_count = post.post_likes.count()
+    all_user_like = list(post.post_likes.all().values_list('username', flat=True))
+    context = {'liked':liked, 'likes_count':likes_count, 'all_user_like':all_user_like}
+    return JsonResponse(context)
+
+def sare_post_likes(request,pk):
+    item = get_object_or_404(share_post,pk=pk)
+    user = request.user 
+    if request.method =='POST':
+        if user in item.share_post_likes.all():
+            item.share_post_likes.remove(user)
+            liked_sh_post = False
+        else:
+            item.share_post_likes.add(user)
+            liked_sh_post=True
+    likes_count_sh_post = item.share_post_likes.count()
+    all_user_like = list(item.share_post_likes.all().values_list('username', flat=True))
+    context={'liked_sh_post':liked_sh_post,'likes_count_sh_post':likes_count_sh_post,'all_user_like':all_user_like}
+    return JsonResponse(context)
+
 @login_required(login_url='user_login')
 def post_comment_section(request,pk):
     post_comment_section_id = get_object_or_404(PostViews,pk=pk)
