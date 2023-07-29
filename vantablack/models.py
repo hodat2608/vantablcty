@@ -66,8 +66,8 @@ class share_post(models.Model):
 #repply for post??
 class CommentViews(models.Model):
     comment_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    post_comment = models.ForeignKey(PostViews, on_delete=models.CASCADE, null=True)
-    share_post_comment = models.ForeignKey(share_post, on_delete=models.CASCADE, null=True)
+    post_comment = models.ForeignKey(PostViews, on_delete=models.CASCADE,null=True,blank=True)
+    share_post_comment = models.ForeignKey(share_post, on_delete=models.CASCADE,null=True,blank=True)
     message = models.TextField(max_length=1000000,blank=True,null=True)
     massage_image = models.ImageField(upload_to='images/', null=True,blank=True)
     comment_likes = models.ManyToManyField(User, related_name='comment_likes',blank=True)

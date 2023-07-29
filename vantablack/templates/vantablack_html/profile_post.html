@@ -170,8 +170,8 @@
                     </div>
                     <br>
                     <div class="setonu">
-                        <h5 class="content-discription" id="content-discription-{{ post.id }}">{{item.discription_sh}}</h5>
-                        <a class="btn-collapse" id="toggle-btn-{{ post.id }}">Xem thêm</a>
+                        <h5 class="content-discription" id="content-discription-{{ item.id }}">{{item.discription_sh}}</h5>
+                        <a class="btn-collapse" id="toggle-btn-{{ item.id }}">Xem thêm</a>
                     </div>
                 
                     <div class="card-sharepost-inner"> 
@@ -415,9 +415,8 @@
                         </div>
                         <h5>{{post.discription}}</h5>     
                         {% if post.post_image %}
-                            <img class="img-post-popup" src =" {{ post.post_image.url}}" width="640">
-                        {% endif %}                  
-                        
+                            <img class="img-post-popup" src =" {{ post.post_image.url}}" width="600">
+                        {% endif %}                                         
                     </div>
                     <br>
                     <button class="btnn" type="submit">Share post </button>
