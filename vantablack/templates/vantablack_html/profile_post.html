@@ -125,7 +125,7 @@
         </div>
     </div>
     
-    <div >
+    <div>
         <div class="widget-post2" aria-labelledby="post-header-title">
             <div class="widget-post__header">
                 <h2 class="widget-post__title" id="post-header-title">
@@ -158,8 +158,8 @@
             </form>
         </div>
         {% for post in post_id_share %}
-            <div class="card-sharepost-profile"> 
-                {% for item in post.share_post_set.all %}
+            {% for item in post.share_post_set.all %}
+                <div class="card-sharepost-profile">    
                     <div class="txt">
                         <a href="{% url 'post_profile' request.user.id %}">
                             <img class="img123" src="{{ request.user.profileuser.avatar.url }}"> 
@@ -256,12 +256,222 @@
                             </button>
                         </form>
 
-                        <button onclick="turnoncommentAndRefresh('{{ post.id }}')"><i class="fas fa-comment"></i> Comment</button>
+                        <button onclick="turnonsharecommentAndRefresh('{{ item.id }}')"><i class="fas fa-comment"></i> Comment</button>
 
-                        <button type="submit" id="share-button-{{ post.id }}"><i class="fas fa-share"></i> Share</button>
+                        <button type="submit" id="share-button-{{ item.id }}"><i class="fas fa-share"></i> Share</button>
                     </div>
-                {% endfor %}
-            </div>
+                    
+                </div>
+
+
+                <div class="popup" id="share-comment-popup-{{ item.id }}" style="display: none;">
+                    <div class="card-shadow">
+                        <div class="txt">
+                            <a href="{% url 'post_profile' request.user.id %}">
+                                <img class="img123" src="{{ request.user.profileuser.avatar.url }}"> 
+                            <div class="datesince">
+                                <div class="close_icon_popup_comment_section">
+                                    <a href="{% url 'post_profile' request.user.id %}">{{request.user.username}}</a>
+                                    <button onclick="closePopupAndReload()"><i class="fas fa-times"></i></button>
+                                </div>
+                                <li>{{item.created|timesince}} ago at {{ item.formatted_created_time}}</li>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="setonu">
+                            <h5 class="content-discription" id="content-discription-{{ post.id }}">{{item.discription_sh}}</h5>
+                            <a class="btn-collapse" id="toggle-btn-{{ post.id }}">Xem thêm</a>
+                        </div>
+                    
+                        <div class="card-sharepost-inner"> 
+                            <div class="txt">
+                                <a href="{% url 'post_profile' post.post_user_id %}">
+                                <img class="img123" src="{{ post.get_post_user_avatar.url }}">
+                                <div class="datesince">
+                                    <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user.username }}</a>
+                                    <li>{{post.created|timesince}} ago</li>
+                                </div>
+                            </div>
+                            <h5>{{ post.discription }}</h5>                       
+                            {% if post.post_image %}
+                                <img class="img-post-share" src="{{ post.post_image.url }}" width="570" height="500">
+                            {% endif %}
+                        </div>
+                
+                        <div class="info-container">
+                            {% if request.user in item.share_post_likes.all %} 
+                            {% if item.share_post_likes.count > 1 %}
+                                <div class="left-align">
+                                    <p class="my-text" id="share-popup-like-count-{{ item.id }}">Bạn và {{ item.share_post_likes.count }} người khác <i class="fas fa-thumbs-up"></i></p>
+                                </div>
+                                <div class="right-align">
+                                    {% if item.commentviews_set.count >= 1 %}
+                                        <p>{{ item.commentviews_set.count }} comment{{item.commentviews_set.count|pluralize}} <i class="fas fa-comment"></i></p>
+                                    {% else %} 
+                                        <p>.</p>
+                                    {% endif %} 
+                                </div>  
+                            {% else %} 
+                                <div class="left-align">
+                                    <p class="my-text" id="share-popup-like-count-{{ item.id }}" >Bạn <i class="fas fa-thumbs-up"></i></p>
+                                </div>
+                                <div class="right-align">
+                                    {% if item.commentviews_set.count >= 1 %}
+                                        <p>{{ item.commentviews_set.count }} comment{{item.commentviews_set.count|pluralize}} <i class="fas fa-comment"></i></p> 
+                                    {% else %} 
+                                        <p>.</p>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                                
+                            {% else %}
+                            {% if item.share_post_likes.count > 0 %}
+                                <div class="left-align">
+                                    <p class="my-text" id="share-popup-like-count-{{ item.id }}">{{ item.share_post_likes.count }} like{{ item.share_post_likes.count|pluralize }} <i class="fas fa-thumbs-up"></i></p> 
+                                </div>
+                                <div class="right-align">
+                                    {% if item.commentviews_set.count >= 1 %}
+                                        <p>{{ item.commentviews_set.count }} comment{{item.commentviews_set.count|pluralize}} <i class="fas fa-comment"></i></p> 
+                                    {% else %} 
+                                        <p>.</p>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="left-align">
+                                    <p class="my-text" id="share-popup-like-count-{{ item.id }}"></i></p>
+                                </div>
+                                <div class="right-align">
+                                    {% if item.commentviews_set.count >= 1 %}
+                                        <p>{{ item.commentviews_set.count }} comment{{item.commentviews_set.count|pluralize}} <i class="fas fa-comment"></i></p> 
+                                    {% else %} 
+                                        <p>.</p>
+                                    {% endif %}
+                                </div>
+                            {% endif %}   
+                            {% endif %}  
+                        </div>
+                        <hr>
+                        <div class="btn-group">
+                            <form action="{% url 'sare_post_likes_section' 0 %}" method="post" id="share-like-popup-form" data-share-like-popup-id="{{ item.id }}" 
+                                data-share-liked-popup="{% if request.user in item.share_post_likes.all %} true {% else %} false {% endif %}"> 
+                                {% csrf_token %}
+                                <button type="submit" id="share-popup-like-button-{{ item.id }}">
+                                    {% if request.user in item.share_post_likes.all %}
+                                        <a class="my-text"><i class="fas fa-thumbs-up"></i> Like</a>
+                                    {% else %}
+                                    <i class="fas fa-thumbs-up"></i> Like
+                                    {% endif %}
+                                </button>
+                            </form>
+                
+                            <button><i class="fas fa-comment"></i> Comment</button>
+                
+                            <button><i class="fas fa-share"></i> Share</button>
+                        </div>
+                
+                        <hr>
+                
+                        <div class="message-form-1">
+                            <form action="#" id="send-share-comment" data-send-share-id="{{ item.id }}" method="post" enctype="multipart/form-data" >
+                                {% csrf_token %}
+                                <div class="form-row-1">
+                                    <input type="text" name="message" id="message" placeholder="Type your message">
+                                    <label for="massage_image" class="upload-icon">
+                                        <input type="file" name="massage_image" id="massage_image" multiple>
+                                        <i class="fas fa-file-image"></i>
+                                    </label>
+                                    <button type="submit" class="send-button">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                
+                        <br>
+                
+                        <div class="box_chat">
+                            {% for comment in item.commentviews_set.all %}
+                                <div class="hello">
+                                    <div class="comment-avatar">
+                                        <div>
+                                            <a href="{% url 'post_profile' comment.comment_user_id %}">
+                                            <img class="img12" src="{{ comment.get_comment_user_avatar.url }}">
+                                        </div>
+                                        <div class="comment-card1">
+                                            <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
+                                                <div id="comment-{{ comment.id }}">                                           
+                                                    <div class="txt">
+                                                        <a href="{% url 'post_profile' comment.comment_user_id %}">{{comment.comment_user }}</a>
+                                                    </div>
+                                                    <small class="formatted-text">{{ comment.message }}</small>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <span onclick="myFunction('{{ comment.id }}')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
+                                                    <div id="myDropdown-{{ comment.id }}" class="dropdown-content dropdown-{{ comment.id }}">
+                                                        {% if comment.comment_user == request.user %}
+                                                        <a href="{% url 'del_comment' comment.id %}" onclick="deleteComment('{{ comment.id }}')" >del_comment</a>
+                                                        {% endif %}
+                                                        <a>Modify</a>
+                                                        <a>report comment</a>
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                            <div>
+                                                {% if comment.massage_image %}
+                                                    <div class="dropdown-image">
+                                                        <img src="{{ comment.massage_image.url }}" width="150" height="100">
+                                                        <div class="dropdown-content-image">
+                                                            {% if comment.massage_image %}
+                                                                <img src="{{ comment.massage_image.url }}" width="500" height="400">
+                                                            {% endif %}                           
+                                                            <div class="desc">Cinque Terre Unique</div>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button class="mode-font-rep" onclick="toggleCreatePostForm2(event,'repply-form-{{ comment.id }}')">Phản hồi</button>  
+                                        <button class="mode-font-like">Like</button> 
+                                    </div>
+                                    <div class="message-form">
+                                        <form action="{% url 'repply_comment' comment.id %}" method="post" id="repply-form-{{ comment.id }}" style="display: none;" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="form-row">
+                                                <input type="text" name="rep_message" placeholder="Type your message">
+                                                <label for="rep_mess_image" class="upload-icon">
+                                                    <input type="file" name="rep_mess_image" id="rep_mess_image" multiple>
+                                                    <i class="fas fa-file-image"></i>
+                                                </label>
+                                                <button type="submit" class="send-button">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div> 
+                                    <div>
+                                        {% if comment.repply_commentviews_set.all %}
+                                            {% for rep_comment in comment.repply_commentviews_set.all %}
+                                                <div class="comment-cad-repply"> 
+                                                    <h5><a href=" {% url 'post_profile' rep_comment.user_rep_id %}">@{{ rep_comment.user_rep.username }}</a></h5>
+                                                    <a class="formatted-text">{{ rep_comment.rep_message }}</a>   
+                                                    <div>
+                                                        {% if rep_comment.rep_mess_image %}
+                                                            <h1><img src="{{ rep_comment.rep_mess_image.url }}" width="100" height="100"></h1>
+                                                        {% endif %}
+                                                    </div>                           
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div> 
+                                </div>
+                                <br>
+                            {% endfor %}
+                        </div>     
+                    </div>
+                </div>
+            {% endfor %}
         {% endfor %}        
 
         {% for post in all_posts %}
@@ -433,7 +643,7 @@
                             <a href="{% url 'post_profile' post.post_user_id %}">
                                 <img class="img123" src="{{ post.get_post_user_avatar.url }}">  
                             <div class="datesince">
-                                <div class="helli">
+                                <div class="close_icon_popup_comment_section">
                                     <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
                                     <button onclick="closePopupAndReload()"><i class="fas fa-times"></i></button>
                                 </div>
@@ -557,7 +767,7 @@
                         </form>
                     </div>
                     <br>
-                    <div class="comment-cad">
+                    <div class="box_chat">
                         {% for comment in post.commentviews_set.all %}
                         <div class="hello">
                             <div class="comment-avatar">
@@ -790,6 +1000,45 @@ $(document).on('submit', '#share-like-form', function(e) {
     });
 });
 
+$(document).on('submit', '#share-like-popup-form', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var share_popup_likeId = form.data('share-like-popup-id');
+    $.ajax({
+    type: 'POST',
+    url: '/sare_post_likes_section/' + share_popup_likeId + '/',
+    data: {
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+    },
+    success: function(data) {
+        var share_popup_liked_button = $('#share-popup-like-button-'+ share_popup_likeId);
+        var share_popup_Liked_count =  $('#share-popup-like-count-' + share_popup_likeId);
+
+        if (data.liked_sh_post_section) {
+            share_popup_liked_button.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'blue').css('font-weight', 'normal');
+            form.data('share-liked-popup',true);
+            if (data.likes_count_sh_post_section > 0) {
+                share_popup_Liked_count.html(data.likes_count_sh_post_section + ' like' + (data.likes_count_sh_post_section > 1 ? 's' : '') +'  <i class="fas fa-thumbs-up"></i>').css('color', 'blue').css('font-weight', 'normal');
+                } else {
+                    share_popup_Liked_count.text(''); 
+                }
+        }
+        else {
+            share_popup_liked_button.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'black').css('font-weight', 'normal');
+            form.data('share-liked-popup',false);
+            if (data.likes_count_sh_post_section > 0) {
+                share_popup_Liked_count.html(data.likes_count_sh_post_section + ' like' + (data.likes_count_sh_post_section > 1 ? 's' : ''));
+                } else {
+                    share_popup_Liked_count.text(''); 
+                }
+        };
+        Liked_user.empty();
+            for (var i = 0; i < data.all_user_like.length; i++) {
+                Liked_user.append(data.all_user_like[i]);};
+    }
+    });
+});
+
 var currentPostID = null;
 function toggleCommentPopupWithDelay(postID) {
     if (currentPostID !== postID) {
@@ -868,19 +1117,41 @@ function turnoncommentAndRefresh(postID) {
         location.reload();
     }, 10);
     sessionStorage.setItem("currentPostID", postID);
+}
+
+function turnonsharecommentAndRefresh(itemID) {
+    var scrollPosition_popup = $(window).scrollTop();
+    localStorage.setItem("scrollPosition", scrollPosition_popup);
+    setTimeout(function() {
+        location.reload();
+    }, 10);
+    sessionStorage.setItem("currentitemID", itemID);
+}
+
+window.onload = function() {
+    var currentPostID = sessionStorage.getItem("currentPostID");
+    if (currentPostID) {
+        sessionStorage.removeItem("currentPostID");
+        setTimeout(function() {
+            var popup = document.getElementById("comment-popup-" + currentPostID);
+            if (popup) {
+                popup.style.display = "block";
             }
-    window.onload = function() {
-        var currentPostID = sessionStorage.getItem("currentPostID");
-        if (currentPostID) {
-            sessionStorage.removeItem("currentPostID");
-            setTimeout(function() {
-                var popup = document.getElementById("comment-popup-" + currentPostID);
-                if (popup) {
-                    popup.style.display = "block";
-                }
-            },10);
-        }
+        },10);
+    }
+
+    var currentitemID = sessionStorage.getItem("currentitemID");
+    if (currentitemID) {
+        sessionStorage.removeItem("currentitemID");
+        setTimeout(function() {
+            var popup = document.getElementById("share-comment-popup-" + currentitemID);
+            if (popup) {
+                popup.style.display = "block";
+            }
+        },10);
+    }
 };
+
 
 function searchUser() {
     var query = document.getElementById("searchInput").value;

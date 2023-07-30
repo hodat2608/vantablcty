@@ -35,6 +35,27 @@ body {
     display: grid;
     grid-template-columns: 2fr 3fr 2fr ;
     }
+
+.header_navbar {
+    max-width: 100%;
+    height: 50px;
+}
+.navbar {
+  display: flex;
+  margin-left:235px ; 
+}
+
+.navbar a {
+  padding: 20px;
+}
+.header_navbar_card {
+  box-shadow: 3px 8px 8px 3px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  margin: 20px auto;
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  }
 /* home card      */
 .card {
     box-shadow: 3px 8px 8px 3px rgba(0, 0, 0, 0.2);
@@ -285,6 +306,17 @@ ul {
   text-align: left;
   
 }
+.box_chat {
+  width: 610px;
+  height: auto;
+  max-height: 500px;
+  overflow: auto; 
+  border: 1px solid #ccc; 
+  padding: 10px; 
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+}
 
 /* comment card */
 .comment-cad {
@@ -292,6 +324,7 @@ ul {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
+  overflow: auto;
 }
 .comment-card1 {
   background-color: #f2f1f1;
@@ -366,7 +399,7 @@ ul {
   gap: 1rem;
   cursor: pointer;
   transition: all ease-in-out 0.3s;
-  padding: 0.5rem 17.6rem;
+  padding: 0.5rem 16.2rem;
   border-radius: 5px;
   box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
   font-weight: 500;
@@ -572,7 +605,7 @@ input[type="text"] {
   border-radius: 20px;
   padding: 4px;
   flex-grow: 1;
-  width: 245%;
+  width: 255%;
   margin-left: 1px;
 }
 
@@ -641,12 +674,14 @@ input[type="text"] {
 .card-shadow {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     max-width:640px;
+    height:auto;
     margin: 20px auto; 
     padding: 16px;
     background-color: #ffffff;
     border-radius: 15px;
     position: relative;
     top: 10%;
+    z-index: 9999999;
 }
 .card-shadow h5 {
   font-size: 17px;
@@ -905,6 +940,7 @@ a{
   z-index: 90000; 
   max-height: 90%;
   max-width: 80%; /* Đặt chiều cao tối đa cho phần card popup */
+  width: 700px;
   overflow: auto; 
   }
 
@@ -921,14 +957,19 @@ a{
 .scroller::-webkit-scrollbar {
   display: none;}
 
-.helli {
+.close_icon_popup_comment_section {
   display: flex;
   justify-content: space-between;
 }
 
-/* Đối với nút (button) */
-.helli button {
-  margin-left: 480px; /* Đẩy nút sát lề phải */
+
+.close_icon_popup_comment_section button {
+  margin-left: 430px;
+}
+
+.three_dot_post_dropdown {
+  display: flex;
+  justify-content: space-between;
 }
 
 .comment-avatar{
@@ -1016,6 +1057,63 @@ a{
 .show-scroll {
   overflow-y: auto; 
 }
+
+.dropdown1 {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+ 
+}
+
+.dropdown1-btn1 {
+  cursor: pointer;
+  margin-left: 385px;
+  z-index: 1;
+}
+
+.dropdown1-content1 {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px;
+  border-radius: 10px;
+  z-index: 1;
+  width: auto;
+  height: auto;
+  margin-left: 130px;
+  z-index: 1;
+}
+
+.dropdown1-content1 a {
+  display: block;
+  padding: 15px 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bolder;
+  font-size: 15px;
+  text-decoration: none;
+  color: #333;
+  z-index: 1;
+}
+.dropdown1-content1 a i {
+      margin-left: 10px; 
+      z-index: 1;
+    }
+    
+.dropdown1-content1 a:hover {
+  background-color: #f1f1f1;
+  z-index: 1;
+}
+
+.show1 {
+  display: block;
+  z-index: 1;
+}
+
+
+
+
 </style>
 
 <script>
@@ -1068,7 +1166,6 @@ function toggleDropdownContent(dropdown) {
     var dropdownContent = dropdown.querySelector(".dropdown-content");
     dropdownContent.classList.toggle("show");
 }
-// Event listener for clicking the dropdown
 document.addEventListener("click", function(event) {
     var dropdowns = document.getElementsByClassName("dropdown");
     Array.from(dropdowns).forEach(function(dropdown) {
@@ -1081,7 +1178,6 @@ document.addEventListener("click", function(event) {
         }
     });
 });
-// Event listener for DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function() {
     var dropdowns = document.getElementsByClassName("dropdown");
     Array.from(dropdowns).forEach(function(dropdown) {

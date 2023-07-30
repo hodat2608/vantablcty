@@ -13,7 +13,7 @@
 
     </div>
 
-    <div >
+    <div>
         
         <div class="card" >
 
@@ -77,7 +77,18 @@
                         <a href="{% url 'post_profile' post.post_user_id %}">
                             <img class="img123" src="{{ post.get_post_user_avatar.url }}">  
                         <div class="datesince">
-                            <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
+                            <div class="three_dot_post_dropdown">
+                                <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
+                                <div class="dropdown1">
+                                    <i class="fas fa-ellipsis-h dropdown1-btn1" data-post-id="{{ post.id }}"></i>
+                                    <div class="dropdown1-content1 dropdown1-content1-{{ post.id }}">
+                                        <a href="#">Lưu bài viết của {{post.post_user}}<i class="far fa-bookmark"></i></a>
+                                        <a href="#">Báo cáo bài viết <i class="fas fa-flag"></i></a>
+                                        <a href="#">Ẩn bài viết của {{post.post_user}}<i class="far fa-eye-slash"></i></a>
+                                        <a href="#">Bật thông báo bài viết này <i class="far fa-bell"></i></a>
+                                    </div>
+                                  </div>
+                            </div>
                             <li>{{post.created|timesince}} ago at {{ post.formatted_created_time}}</li>
                         </div>
                     </div>
@@ -217,9 +228,12 @@
                                 <li>{{post.created|timesince}} ago</li>
                             </div>
                         </div>
-                        <h5>{{post.discription}}</h5>
+                        <div class="setonu">
+                            <h5 class="content-discription" id="content-discription-{{ post.id }}">{{ post.discription }}</h5>
+                            <a class="btn-collapse" id="toggle-btn-{{ post.id }}">Xem thêm</a>
+                        </div>
                         {% if post.post_image %}
-                            <img src =" {{ post.post_image.url}}" width="600">
+                            <img class="img-post" src =" {{ post.post_image.url}}" width="600">
                         {% endif %}                       
                         
                     </div>
@@ -238,7 +252,7 @@
                             <a href="{% url 'post_profile' post.post_user_id %}">
                                 <img class="img123" src="{{ post.get_post_user_avatar.url }}">  
                             <div class="datesince">
-                                <div class="helli">
+                                <div class="close_icon_popup_comment_section">
                                     <a href="{% url 'post_profile' post.post_user_id %}">{{ post.post_user }}</a>
                                     <button onclick="closePopupAndReload()"><i class="fas fa-times"></i></button>
                                 </div>
@@ -246,7 +260,10 @@
                             </div>
                         </div>
 
-                        <h5 class="formatted-text">{{ post.discription }}</h5>
+                        <div class="setonu">
+                            <h5 class="content-discription" id="content-discription-{{ post.id }}">{{ post.discription }}</h5>
+                            <a class="btn-collapse" id="toggle-btn-{{ post.id }}">Xem thêm</a>
+                        </div>
                         {% if post.post_image %}
                             <img class="img-post-popup" src =" {{ post.post_image.url}}" width="640" >
                         {% endif %}   
@@ -363,7 +380,7 @@
                         </form>
                     </div>
                     <br>
-                    <div class="comment-cad">
+                    <div class="box_chat">
                         {% for comment in post.commentviews_set.all %}
                         <div class="hello">
                             <div class="comment-avatar">
@@ -755,6 +772,29 @@ for (let i = 0; i < posts.length; i++) {
         }
     });
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+      const dropdownBtns = document.querySelectorAll(".dropdown1-btn1");
+
+      dropdownBtns.forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          const postId = this.dataset.postId;
+          const dropdownContent = document.querySelector(`.dropdown1-content1-${postId}`);
+          dropdownContent.classList.toggle("show1");
+        });
+      });
+
+      window.addEventListener("click", function(event) {
+        if (!event.target.matches(".dropdown1-btn1")) {
+          const dropdownContents = document.querySelectorAll(".dropdown1-content1");
+          dropdownContents.forEach(function(content) {
+            if (content.classList.contains("show1")) {
+              content.classList.remove("show1");
+            }
+          });
+        }
+      });
+    });
 
 </script> 
 

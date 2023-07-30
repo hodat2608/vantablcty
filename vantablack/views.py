@@ -89,6 +89,21 @@ def sare_post_likes(request,pk):
     context={'liked_sh_post':liked_sh_post,'likes_count_sh_post':likes_count_sh_post,'all_user_like':all_user_like}
     return JsonResponse(context)
 
+def sare_post_likes_section(request,pk):
+    item = get_object_or_404(share_post,pk=pk)
+    user = request.user 
+    if request.method =='POST':
+        if user in item.share_post_likes.all():
+            item.share_post_likes.remove(user)
+            liked_sh_post_section = False
+        else:
+            item.share_post_likes.add(user)
+            liked_sh_post_section =  True
+    likes_count_sh_post_section = item.share_post_likes.count()
+    all_user_like = list(item.share_post_likes.all().values_list('username', flat=True))
+    context={'liked_sh_post_section':liked_sh_post_section,'likes_count_sh_post_section':likes_count_sh_post_section,'all_user_like':all_user_like}
+    return JsonResponse(context)
+
 @login_required(login_url='user_login')
 def post_comment_section(request,pk):
     post_comment_section_id = get_object_or_404(PostViews,pk=pk)
