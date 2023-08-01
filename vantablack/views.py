@@ -1,6 +1,4 @@
 from django.shortcuts import render
-
-from django.shortcuts import render
 from django.http import HttpResponse 
 from .models import PostViews, CommentViews , User, ProfileUser,Repply_commentviews,share_post
 from django.shortcuts import get_object_or_404, render
@@ -174,27 +172,36 @@ def send_comment(request,pk):
             send_message = CommentViews.objects.create(comment_user=request.user,post_comment=comment_for_post,
                 message=message,massage_image=massage_image)
             send_message.save()
-            return redirect('homepage')
+            new_comment = { 
+                'comment_user':send_message.comment_user,
+                'user': request.user,
+                'avatar_url': send_comment.get_comment_user_avatar.url,
+                'profile_url': f'/post_profile/{send_message.comment_user_id}/',
+                'comment_id': send_message.id,
+                'comment_user_username': send_message.comment_user.username,
+                'comment_massage' : send_message.message,
+                'comment_massage_image' : send_message.massage_image.url if send_message.massage_image else " "}              
+            return JsonResponse(new_comment)
+        else: 
+            return JsonResponse({'error': 'sai form data'}, status=400)
     else: 
         form = user_send_comment_form()
     return render(request, 'homepage.html', {'form' : form},)
 
+
 @login_required(login_url='user_login')
 def del_comment(request,pk):
-    try:
-        del_comment_id = CommentViews.objects.get(pk=pk)
+    del_comment_id = CommentViews.objects.get(pk=pk)
+    if request.method == 'POST':
         del_comment_id.delete()
-        commit=True
-        context = {'commit':commit}
-        return JsonResponse(context,status=200)
-    except CommentViews.DoesNotExist:
-        return JsonResponse({'error': 'Comment not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        id = del_comment_id.post_comment_id
+        id_post = PostViews.objects.get(pk=id)
+        commit = True
+        print(commit) 
+    return JsonResponse({'commit':commit})
 
 def repply_comment(request,pk):
     comment_id = CommentViews.objects.get(pk=pk)
-    comment_id_of_post = comment_id.post_comment_id
     if request.method == 'POST':
         form = repply_comment_form(request.POST, request.FILES)
         if form.is_valid():
@@ -202,10 +209,18 @@ def repply_comment(request,pk):
             rep_mess_image = request.FILES.get('rep_mess_image')
             repply_all = Repply_commentviews.objects.create(user_rep=request.user,rep_commentviews=comment_id,rep_message=rep_message,rep_mess_image=rep_mess_image)
             repply_all.save()
-            return redirect('post_comment_section',pk=comment_id_of_post)
-    else: 
+            new_repppy_cmt = {
+                'avatar_url_rp': repply_all.get_repply_comment_user_avatar.url,
+                'repply_id':repply_all.id,
+                'profile_url_repply': f'/post_profile/{repply_all.user_rep_id}/',
+                'repply_user_username':repply_all.user_rep.username,
+                'repply_user_id':repply_all.user_rep.id,
+                'repply_rep_message':repply_all.rep_message,
+                'repply_rep_mess_image':repply_all.rep_mess_image.url if repply_all.rep_mess_image else " "}
+            return JsonResponse(new_repppy_cmt)
+    else:
         form = repply_comment_form()
-    return render(request, 'reddot_html/post_&_comment_section.html', {'form' : form},)
+    return render(request, 'homepage.html', {'form' : form},)
 
 def share_post_views(request,pk):
     post_id = PostViews.objects.get(pk=pk)

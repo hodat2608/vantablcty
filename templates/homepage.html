@@ -381,8 +381,11 @@
                     </div>
                     <br>
                     <div class="box_chat">
+                        <div id="comment-section">
+                            <!-- commmet will put on here -->
+                        </div>   
                         {% for comment in post.commentviews_set.all %}
-                        <div class="hello">
+                        <div class="hello" id="delete-comment-{{ comment.id }}">
                             <div class="comment-avatar">
                                 <div>
                                     <a href="{% url 'post_profile' comment.comment_user_id %}">
@@ -423,11 +426,11 @@
                                 </div>
                             </div>
                             <div>
-                                <button class="mode-font-rep" onclick="toggleCreatePostForm2(event,'repply-form-{{ comment.id }}')">Phản hồi</button>  
+                                <button class="mode-font-rep" data-repply-form="{{ comment.id }}">Phản hồi</button>  
                                 <button class="mode-font-like">Like</button> 
                             </div>
                             <div class="message-form">
-                                <form action="{% url 'repply_comment' comment.id %}" method="post" id="repply-form-{{ comment.id }}" style="display: none;" enctype="multipart/form-data">
+                                <form action="{% url 'repply_comment' 0 %}" data-comment-id="{{ comment.id }}" id="repply-form-{{ comment.id }}"  method="post" enctype="multipart/form-data" style ="display: none;">
                                     {% csrf_token %}
                                     <div class="form-row">
                                         <input type="text" name="rep_message" placeholder="Type your message">
@@ -441,6 +444,9 @@
                                     </div>
                                 </form>
                             </div> 
+                            <div id="repply-section-{{ comment.id }}">
+                                <!-- Đây là nơi chứa các repply -->
+                            </div>
                             <div>
                                 {% if comment.repply_commentviews_set.all %}
                                     {% for rep_comment in comment.repply_commentviews_set.all %}
@@ -604,33 +610,33 @@ function closePopupAndReload() {
     }, 10);
 }
 
-$(document).on('submit', '#send-comment', function(e) {
-    e.preventDefault();
-    var form = $(this);
-    var sendcommentId = form.data('send-id');
-    var popup_q = document.getElementById("comment-popup-" + sendcommentId);
-    var popupScrollPosition_cmt = $(popup_q).scrollTop();
-    var message = form.find('input[name="message"]').val();
-    var massageImage = $("#massage_image").prop('files')[0];
-    var formData = new FormData();
-    formData.append('message', message);
-    formData.append('massage_image', massageImage);
-    formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
-    $.ajax({
-        type: 'POST',
-        url: '/send_comment/' + sendcommentId + '/',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function() {  
-            localStorage.setItem("popupScrollPosition_cmt", popupScrollPosition_cmt); 
-            localStorage.setItem("sendcommentId", sendcommentId);
-            setTimeout(function() {
-                location.reload();
-            }, 50);
-        }
-    });
-});
+// $(document).on('submit', '#send-comment', function(e) {
+//     e.preventDefault();
+//     var form = $(this);
+//     var sendcommentId = form.data('send-id');
+//     var popup_q = document.getElementById("comment-popup-" + sendcommentId);
+//     var popupScrollPosition_cmt = $(popup_q).scrollTop();
+//     var message = form.find('input[name="message"]').val();
+//     var massageImage = $("#massage_image").prop('files')[0];
+//     var formData = new FormData();
+//     formData.append('message', message);
+//     formData.append('massage_image', massageImage);
+//     formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+//     $.ajax({
+//         type: 'POST',
+//         url: '/send_comment/' + sendcommentId + '/',
+//         data: formData,
+//         processData: false,
+//         contentType: false,
+//         success: function() {  
+//             localStorage.setItem("popupScrollPosition_cmt", popupScrollPosition_cmt); 
+//             localStorage.setItem("sendcommentId", sendcommentId);
+//             setTimeout(function() {
+//                 location.reload();
+//             }, 50);
+//         }
+//     });
+// });
 
 $(document).ready(function() {
     var popupScrollPosition_cmt = localStorage.getItem("popupScrollPosition_cmt"); 
@@ -795,6 +801,275 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       });
     });
+
+  
+
+$(document).on('submit', '#send-comment', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var sendcommentId = form.data('send-id');
+    var message = form.find('input[name="message"]').val();
+    var massageImage = $("#massage_image").prop('files')[0];
+    var formData = new FormData();
+    formData.append('message', message);
+    formData.append('massage_image', massageImage);
+    formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+    $.ajax({
+        type: 'POST',
+        url: '/send_comment/' + sendcommentId + '/',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(data) {
+            var comment_user = data.comment_user;
+            var user = data.user;
+            var comment_user_username = data.comment_user_username; 
+            var comment_massage = data.comment_massage;
+            var comment_massage_image = data.comment_massage_image;
+            var comment_id = data.comment_id;
+            var profile_url = data.profile_url;
+            var avatar_url = data.avatar_url;
+            console.log('ajax0:',comment_id);
+            var comment_imageHTML = '';
+                if (comment_massage_image) {
+                    comment_imageHTML = ` 
+                                            <div class="dropdown-image">
+                                                <img src="`+comment_massage_image+`" width="150" height="100">
+                                                <div class="dropdown-content-image">
+                                                    <img src="`+comment_massage_image+`" width="500" height="400">                                                 
+                                                    <div class="desc">Cinque Terre Unique</div>
+                                                </div>
+                                            </div>
+                                        `
+                } ; 
+            var dropbox ='';
+                if (comment_user=user) {
+                    dropbox = `<a href="#" onclick="deleteComment('`+comment_id+`')" >del_comment</a>`;
+                };
+
+            var NewCommentHTML =`   <div class="hello">
+                                        <div class="comment-avatar">
+                                            <div>
+                                                <a href="`+profile_url+`">
+                                                <img class="img12" src="`+avatar_url+`">
+                                            </div>
+                                            <div class="comment-card1">
+                                                <div class="dua_len_ngang_hang_va_dieu_chinh_khoang_cach">
+                                                    <div id="comment-`+comment_id+`">                                           
+                                                        <div class="txt">
+                                                            <a href="`+profile_url+`">`+comment_user_username+`</a>
+                                                        </div>
+                                                        <small class="formatted-text">`+comment_massage+`</small>
+                                                    </div>
+                                                    <div class="dropdown">
+                                                        <span onclick="myFunction('`+comment_id+`')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
+                                                        <div id="myDropdown-`+comment_id+`" class="dropdown-content dropdown-`+comment_id+`">
+                                                           
+                                                            <a>Modify</a>
+                                                            <a>report comment</a>
+                                                        </div>
+                                                    </div> 
+                                                </div>
+                                            </div>
+                                    `
+                NewCommentHTML +=   `       <div>
+                                                `+comment_imageHTML+`
+                                            </div>
+                                            
+                                        </div>
+                                    `
+
+                NewCommentHTML +=   `   
+                                        <div>
+                                            <button class="mode-font-rep" data-repply-form="`+ comment_id +`">Phản hồi</button>
+                                            <button class="mode-font-like">Like</button> 
+                                        </div>
+                                    `
+                NewCommentHTML +=   `
+                                        <div class="message-form">
+                                            <form action="{% url 'repply_comment' 0 %}" method="post" data-comment-id="`+comment_id+`" id="repply-form-`+comment_id+`" enctype="multipart/form-data" style ="display: none;">  
+                                                {% csrf_token %}
+                                                <div class="form-row">
+                                                    <input type="text" name="rep_message" placeholder="Type your message">
+                                                    <label for="rep_mess_image" class="upload-icon">
+                                                        <input type="file" name="rep_mess_image" id="rep_mess_image" multiple>
+                                                        <i class="fas fa-file-image"></i>
+                                                    </label>
+                                                    <button type="submit" class="send-button">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>     
+                                        <div id="repply-section-`+comment_id+`">
+                                            
+                                        </div>
+                                    </div> 
+                                    <br>
+                                    `
+            var newComment = $(NewCommentHTML);
+            $("#comment-section").prepend(newComment);  
+
+
+            $(document).on('submit', 'form[id^="repply-form-"]', function(e) {
+                e.preventDefault();
+                var comment_id = form.data('comment-id');
+                console.log('ajax:',comment_id)
+                var rep_message = form.find('input[name="rep_message"]').val();
+                var rep_mess_image = form.find('input[name="rep_mess_image"]').prop('files')[0];
+                var formData = new FormData(this); 
+                formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+            $.ajax({
+                type: 'POST',
+                url: '/repply_comment/' + comment_id + '/',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    var repply_id = data.repply_id;
+                    var repply_user_username = data.repply_user_username;
+                    var repply_user_id = data.repply_user_id;
+                    var repply_rep_message = data.repply_rep_message;
+                    var repply_rep_mess_image = data.repply_rep_mess_image;
+                    var profile_url_repply = data.profile_url_repply;
+                    var avatar_url_rp = data.avatar_url_rp;
+                    var repply_comment_imageHTML = '';
+                        if (repply_rep_mess_image) {repply_comment_imageHTML =  `<img src="{{ rep_comment.rep_mess_image.url }}" width="100" height="100"`};
+
+                    var NewRepplyCommentHTML=   `   
+                                                    <div class="comment-cad-repply"> 
+                                                        <div>
+                                                            <a href="`+profile_url_repply+`">
+                                                            <img class="img12" src="`+avatar_url_rp+`">
+                                                        </div>
+                                                        <a href="` + profile_url_repply +`">`+repply_user_username+`</a>
+                                                        <a class="formatted-text">`+repply_rep_message+`</a>   
+                                                        <div>
+                                                            ` + repply_comment_imageHTML +`
+                                                        </div>                           
+                                                    </div>                                                   
+                                                `
+                var newrepplyComment = $(NewRepplyCommentHTML);
+                $("#repply-section-" + comment_id).append(newrepplyComment);
+
+                },
+                error: function(error) {
+                }
+            });
+
+            $(document).on('submit', '#del_comments', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var DelcommentId = data.comment_id;
+                $.ajax({
+                    type: 'POST',
+                    url: '/del_comment/' + DelcommentId + '/',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val() 
+                    },
+                    success: function(data) {
+                        if (data.commit) {
+                            $('#delete-comment-' + DelcommentId).remove();
+                        } else {
+                            alert('Không thể xóa comment: ' + data.error);
+                        }
+                    },    
+            });
+            })
+
+            $(document).on("click", ".mode-font-rep", function(event) {
+                event.preventDefault();
+                var commentId = $(this).data("repply-form");
+                toggleRepplyForm(event, "repply-form-" + commentId);
+                });
+            function toggleRepplyForm(event, repply_formId) {
+                event.preventDefault();
+                var formDiv = document.getElementById(repply_formId);
+                formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
+                }
+            });
+    } 
+});
+});
+
+
+$(document).on('submit', 'form[id^="repply-form-"]', function(e) {
+                e.preventDefault();
+                var comment_id = form.data('comment-id');
+                console.log('ajax:',comment_id)
+                var rep_message = form.find('input[name="rep_message"]').val();
+                var rep_mess_image = form.find('input[name="rep_mess_image"]').prop('files')[0];
+                var formData = new FormData(this); 
+                formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+            $.ajax({
+                type: 'POST',
+                url: '/repply_comment/' + comment_id + '/',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    var repply_id = data.repply_id;
+                    var repply_user_username = data.repply_user_username;
+                    var repply_user_id = data.repply_user_id;
+                    var repply_rep_message = data.repply_rep_message;
+                    var repply_rep_mess_image = data.repply_rep_mess_image;
+                    var profile_url_repply = data.profile_url_repply;
+                    var avatar_url_rp = data.avatar_url_rp;
+                    var repply_comment_imageHTML = '';
+                        if (repply_rep_mess_image) {repply_comment_imageHTML =  `<img src="{{ rep_comment.rep_mess_image.url }}" width="100" height="100"`};
+
+                    var NewRepplyCommentHTML=   `   
+                                                    <div class="comment-cad-repply"> 
+                                                        <div>
+                                                            <a href="`+profile_url_repply+`">
+                                                            <img class="img12" src="`+avatar_url_rp+`">
+                                                        </div>
+                                                        <a href="` + profile_url_repply +`">`+repply_user_username+`</a>
+                                                        <a class="formatted-text">`+repply_rep_message+`</a>   
+                                                        <div>
+                                                            ` + repply_comment_imageHTML +`
+                                                        </div>                           
+                                                    </div>                                                   
+                                                `
+                var newrepplyComment = $(NewRepplyCommentHTML);
+                $("#repply-section-" + comment_id).append(newrepplyComment);
+
+                },
+                error: function(error) {
+                }
+            });
+});
+$(document).on('submit', '#del_comments', function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var DelcommentId = form.data('del-id');
+    $.ajax({
+        type: 'POST',
+        url: '/del_comment/' + DelcommentId + '/',
+        data: {
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val() 
+        },
+        success: function(data) {
+            if (data.commit) {
+                $('#delete-comment-' + DelcommentId).remove();
+            } else {
+                alert('Không thể xóa comment: ' + data.error);
+            }
+        },     
+});
+})
+
+$(document).on("click", ".mode-font-rep", function(event) {
+  event.preventDefault();
+  var commentId = $(this).data("repply-form");
+  toggleRepplyForm(event, "repply-form-" + commentId);
+});
+function toggleRepplyForm(event, repply_formId) {
+  event.preventDefault();
+  var formDiv = document.getElementById(repply_formId);
+  formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
+}
+
 
 </script> 
 
