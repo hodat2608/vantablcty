@@ -821,15 +821,15 @@ $(document).on('submit', '#send-comment', function(e) {
         processData: false,
         contentType: false,
         success: function(data) {
-            var comment_user = data.comment_user;
-            var user = data.user;
             var comment_user_username = data.comment_user_username; 
             var comment_massage = data.comment_massage;
             var comment_massage_image = data.comment_massage_image;
             var comment_id = data.comment_id;
             var profile_url = data.profile_url;
             var avatar_url = data.avatar_url;
-            console.log('ajax0:',comment_id);
+            var user = data.user
+            console.log('ajax0:',comment_user_username);
+            console.log('ajax1:',comment_id);
             var comment_imageHTML = '';
                 if (comment_massage_image) {
                     comment_imageHTML = ` 
@@ -841,9 +841,9 @@ $(document).on('submit', '#send-comment', function(e) {
                                                 </div>
                                             </div>
                                         `
-                } ; 
+                }; 
             var dropbox ='';
-                if (comment_user=user) {
+                if (comment_user_username===user) {
                     dropbox = `<a href="#" onclick="deleteComment('`+comment_id+`')" >del_comment</a>`;
                 };
 
@@ -864,7 +864,7 @@ $(document).on('submit', '#send-comment', function(e) {
                                                     <div class="dropdown">
                                                         <span onclick="myFunction('`+comment_id+`')" class="dropbtn"><i class="fas fa-ellipsis-v"></i></span>
                                                         <div id="myDropdown-`+comment_id+`" class="dropdown-content dropdown-`+comment_id+`">
-                                                           
+                                                            `+dropbox+`
                                                             <a>Modify</a>
                                                             <a>report comment</a>
                                                         </div>
@@ -872,13 +872,12 @@ $(document).on('submit', '#send-comment', function(e) {
                                                 </div>
                                             </div>
                                     `
-                NewCommentHTML +=   `       <div>
+                NewCommentHTML +=   `       
+                                            <div>
                                                 `+comment_imageHTML+`
-                                            </div>
-                                            
+                                            </div>                                           
                                         </div>
                                     `
-
                 NewCommentHTML +=   `   
                                         <div>
                                             <button class="mode-font-rep" data-repply-form="`+ comment_id +`">Phản hồi</button>
@@ -901,7 +900,7 @@ $(document).on('submit', '#send-comment', function(e) {
                                                 </div>
                                             </form>
                                         </div>     
-                                        <div id="repply-section-`+comment_id+`">
+                                        <div id="repply-section-`+ comment_id +`">
                                             
                                         </div>
                                     </div> 
@@ -911,13 +910,16 @@ $(document).on('submit', '#send-comment', function(e) {
             $("#comment-section").prepend(newComment);  
 
 
-            $(document).on('submit', 'form[id^="repply-form-"]', function(e) {
+            $(document).on('submit', 'form[id^="repply-form-"]', function(e){
                 e.preventDefault();
+                var form = $(this);
                 var comment_id = form.data('comment-id');
                 console.log('ajax:',comment_id)
                 var rep_message = form.find('input[name="rep_message"]').val();
                 var rep_mess_image = form.find('input[name="rep_mess_image"]').prop('files')[0];
                 var formData = new FormData(this); 
+                formData.append('rep_message', rep_message);
+                formData.append('rep_mess_image', rep_mess_image);
                 formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
             $.ajax({
                 type: 'POST',
@@ -934,7 +936,7 @@ $(document).on('submit', '#send-comment', function(e) {
                     var profile_url_repply = data.profile_url_repply;
                     var avatar_url_rp = data.avatar_url_rp;
                     var repply_comment_imageHTML = '';
-                        if (repply_rep_mess_image) {repply_comment_imageHTML =  `<img src="{{ rep_comment.rep_mess_image.url }}" width="100" height="100"`};
+                        if (repply_rep_mess_image) {repply_comment_imageHTML =  `<img src="`+repply_rep_mess_image+`" width="100" height="100"`};
 
                     var NewRepplyCommentHTML=   `   
                                                     <div class="comment-cad-repply"> 
@@ -949,12 +951,12 @@ $(document).on('submit', '#send-comment', function(e) {
                                                         </div>                           
                                                     </div>                                                   
                                                 `
-                var newrepplyComment = $(NewRepplyCommentHTML);
-                $("#repply-section-" + comment_id).append(newrepplyComment);
+                    var newrepplyComment = $(NewRepplyCommentHTML);
+                    $("#repply-section-" + comment_id).append(newrepplyComment);
 
                 },
-                error: function(error) {
-                }
+                error: function(error) {}
+                    
             });
 
             $(document).on('submit', '#del_comments', function(e) {
@@ -988,8 +990,8 @@ $(document).on('submit', '#send-comment', function(e) {
                 formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
                 }
             });
-    } 
-});
+        } 
+    });
 });
 
 

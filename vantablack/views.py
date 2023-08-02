@@ -167,20 +167,20 @@ def send_comment(request,pk):
     if request.method == 'POST':
         form = user_send_comment_form(request.POST, request.FILES)
         if form.is_valid():
-            message = form.cleaned_data['message']
+            message = request.POST.get('message')
             massage_image = request.FILES.get('massage_image')
             send_message = CommentViews.objects.create(comment_user=request.user,post_comment=comment_for_post,
                 message=message,massage_image=massage_image)
             send_message.save()
+            avatar_url = send_message.get_comment_user_avatar().url if send_message.get_comment_user_avatar() else '/media/images/default_avatar.jpg'
             new_comment = { 
-                'comment_user':send_message.comment_user,
-                'user': request.user,
-                'avatar_url': send_comment.get_comment_user_avatar.url,
+                'avatar_url': avatar_url,
+                'user': request.user.username if request.user.is_authenticated else None,
                 'profile_url': f'/post_profile/{send_message.comment_user_id}/',
                 'comment_id': send_message.id,
-                'comment_user_username': send_message.comment_user.username,
+                'comment_user_username': send_message.comment_user.username if send_message.comment_user else None,
                 'comment_massage' : send_message.message,
-                'comment_massage_image' : send_message.massage_image.url if send_message.massage_image else " "}              
+                'comment_massage_image' : send_message.massage_image.url if send_message.massage_image else '',}              
             return JsonResponse(new_comment)
         else: 
             return JsonResponse({'error': 'sai form data'}, status=400)
@@ -205,12 +205,13 @@ def repply_comment(request,pk):
     if request.method == 'POST':
         form = repply_comment_form(request.POST, request.FILES)
         if form.is_valid():
-            rep_message = form.cleaned_data['rep_message']
+            rep_message = request.POST.get('rep_message')
             rep_mess_image = request.FILES.get('rep_mess_image')
             repply_all = Repply_commentviews.objects.create(user_rep=request.user,rep_commentviews=comment_id,rep_message=rep_message,rep_mess_image=rep_mess_image)
             repply_all.save()
+            avatar_url_rp = repply_all.get_repply_comment_user_avatar().url if repply_all.get_repply_comment_user_avatar() else '/media/images/default_avatar.jpg'
             new_repppy_cmt = {
-                'avatar_url_rp': repply_all.get_repply_comment_user_avatar.url,
+                'avatar_url_rp': avatar_url_rp,
                 'repply_id':repply_all.id,
                 'profile_url_repply': f'/post_profile/{repply_all.user_rep_id}/',
                 'repply_user_username':repply_all.user_rep.username,

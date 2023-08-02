@@ -79,9 +79,9 @@ WSGI_APPLICATION = 'My_Social_NETWORK.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'vantablack',
+        'NAME': 'SNW',
         'USER': 'root',
-        'PASSWORD': 'mysqlserver',
+        'PASSWORD': '123456789',
         'PORT': 3306,
         'HOST': '127.0.0.1',
     }
