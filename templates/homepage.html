@@ -381,7 +381,7 @@
                     </div>
                     <br>
                     <div class="box_chat">
-                        <div id="comment-section">
+                        <div id="comment-section-{{ post.id }}">    
                             <!-- commmet will put on here -->
                         </div>   
                         {% for comment in post.commentviews_set.all %}
@@ -830,8 +830,9 @@ $(document).on('submit', '#send-comment', function(e) {
             var user = data.user
             console.log('ajax0:',comment_user_username);
             console.log('ajax1:',comment_id);
+            var hasCommentImage = comment_massage_image && comment_massage_image.trim() !== '';
             var comment_imageHTML = '';
-                if (comment_massage_image) {
+                if (hasCommentImage) {
                     comment_imageHTML = ` 
                                             <div class="dropdown-image">
                                                 <img src="`+comment_massage_image+`" width="150" height="100">
@@ -844,7 +845,11 @@ $(document).on('submit', '#send-comment', function(e) {
                 }; 
             var dropbox ='';
                 if (comment_user_username===user) {
-                    dropbox = `<a href="#" onclick="deleteComment('`+comment_id+`')" >del_comment</a>`;
+                    dropbox = `
+                                <form action="{% url 'del_comment' 0 %}" method="post" id="del_comments" data-del-id="`+comment_id+`">
+                                    {% csrf_token %}
+                                    <button type="submit">delete</button>
+                                </form>`
                 };
 
             var NewCommentHTML =`   <div class="hello">
@@ -871,13 +876,16 @@ $(document).on('submit', '#send-comment', function(e) {
                                                     </div> 
                                                 </div>
                                             </div>
+                                        </div>
                                     `
-                NewCommentHTML +=   `       
+            if(hasCommentImage) {
+                NewCommentHTML +=
+                                    `       
                                             <div>
                                                 `+comment_imageHTML+`
                                             </div>                                           
-                                        </div>
-                                    `
+                                        
+                                    `}  ;
                 NewCommentHTML +=   `   
                                         <div>
                                             <button class="mode-font-rep" data-repply-form="`+ comment_id +`">Phản hồi</button>
@@ -907,7 +915,7 @@ $(document).on('submit', '#send-comment', function(e) {
                                     <br>
                                     `
             var newComment = $(NewCommentHTML);
-            $("#comment-section").prepend(newComment);  
+            $("#comment-section-" + sendcommentId).prepend(newComment);  
 
 
             $(document).on('submit', 'form[id^="repply-form-"]', function(e){
@@ -935,8 +943,9 @@ $(document).on('submit', '#send-comment', function(e) {
                     var repply_rep_mess_image = data.repply_rep_mess_image;
                     var profile_url_repply = data.profile_url_repply;
                     var avatar_url_rp = data.avatar_url_rp;
+                    var hasRPCommentImage = repply_rep_mess_image && repply_rep_mess_image.trim() !== '';
                     var repply_comment_imageHTML = '';
-                        if (repply_rep_mess_image) {repply_comment_imageHTML =  `<img src="`+repply_rep_mess_image+`" width="100" height="100"`};
+                        if (hasRPCommentImage) {repply_comment_imageHTML =  `<img src="`+repply_rep_mess_image+`" width="100" height="100"`};
 
                     var NewRepplyCommentHTML=   `   
                                                     <div class="comment-cad-repply"> 
@@ -945,12 +954,14 @@ $(document).on('submit', '#send-comment', function(e) {
                                                             <img class="img12" src="`+avatar_url_rp+`">
                                                         </div>
                                                         <a href="` + profile_url_repply +`">`+repply_user_username+`</a>
-                                                        <a class="formatted-text">`+repply_rep_message+`</a>   
-                                                        <div>
+                                                        <a class="formatted-text">`+repply_rep_message+`</a> ` 
+                    if (hasRPCommentImage){                                     
+                        NewRepplyCommentHTML +=                                
+                                                        `<div>
                                                             ` + repply_comment_imageHTML +`
                                                         </div>                           
                                                     </div>                                                   
-                                                `
+                                                `};
                     var newrepplyComment = $(NewRepplyCommentHTML);
                     $("#repply-section-" + comment_id).append(newrepplyComment);
 
@@ -977,7 +988,7 @@ $(document).on('submit', '#send-comment', function(e) {
                         }
                     },    
             });
-            })
+            });
 
             $(document).on("click", ".mode-font-rep", function(event) {
                 event.preventDefault();
@@ -996,50 +1007,56 @@ $(document).on('submit', '#send-comment', function(e) {
 
 
 $(document).on('submit', 'form[id^="repply-form-"]', function(e) {
-                e.preventDefault();
-                var comment_id = form.data('comment-id');
-                console.log('ajax:',comment_id)
-                var rep_message = form.find('input[name="rep_message"]').val();
-                var rep_mess_image = form.find('input[name="rep_mess_image"]').prop('files')[0];
-                var formData = new FormData(this); 
-                formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
-            $.ajax({
-                type: 'POST',
-                url: '/repply_comment/' + comment_id + '/',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(data) {
-                    var repply_id = data.repply_id;
-                    var repply_user_username = data.repply_user_username;
-                    var repply_user_id = data.repply_user_id;
-                    var repply_rep_message = data.repply_rep_message;
-                    var repply_rep_mess_image = data.repply_rep_mess_image;
-                    var profile_url_repply = data.profile_url_repply;
-                    var avatar_url_rp = data.avatar_url_rp;
-                    var repply_comment_imageHTML = '';
-                        if (repply_rep_mess_image) {repply_comment_imageHTML =  `<img src="{{ rep_comment.rep_mess_image.url }}" width="100" height="100"`};
+    e.preventDefault();
+    var form = $(this);
+    var comment_id = form.data('comment-id');
+    console.log('ajax:',comment_id)
+    var rep_message = form.find('input[name="rep_message"]').val();
+    var rep_mess_image = form.find('input[name="rep_mess_image"]').prop('files')[0];
+    var formData = new FormData(this); 
+    formData.append('rep_message', rep_message);
+    formData.append('rep_mess_image', rep_mess_image);
+    formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
+$.ajax({
+    type: 'POST',
+    url: '/repply_comment/' + comment_id + '/',
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function(data) {
+        var repply_id = data.repply_id;
+        var repply_user_username = data.repply_user_username;
+        var repply_user_id = data.repply_user_id;
+        var repply_rep_message = data.repply_rep_message;
+        var repply_rep_mess_image = data.repply_rep_mess_image;
+        var profile_url_repply = data.profile_url_repply;
+        var avatar_url_rp = data.avatar_url_rp;
+        var hasCommentImage = repply_rep_mess_image && repply_rep_mess_image.trim() !== '';
+        var repply_comment_imageHTML = '';
+            if (hasCommentImage) {repply_comment_imageHTML =  `<img src="`+repply_rep_mess_image+`" width="100" height="100"`};
 
-                    var NewRepplyCommentHTML=   `   
-                                                    <div class="comment-cad-repply"> 
-                                                        <div>
-                                                            <a href="`+profile_url_repply+`">
-                                                            <img class="img12" src="`+avatar_url_rp+`">
-                                                        </div>
-                                                        <a href="` + profile_url_repply +`">`+repply_user_username+`</a>
-                                                        <a class="formatted-text">`+repply_rep_message+`</a>   
-                                                        <div>
-                                                            ` + repply_comment_imageHTML +`
-                                                        </div>                           
-                                                    </div>                                                   
-                                                `
-                var newrepplyComment = $(NewRepplyCommentHTML);
-                $("#repply-section-" + comment_id).append(newrepplyComment);
+        var NewRepplyCommentHTML=   `   
+                                        <div class="comment-cad-repply"> 
+                                            <div>
+                                                <a href="`+profile_url_repply+`">
+                                                <img class="img12" src="`+avatar_url_rp+`">
+                                            </div>
+                                            <a href="` + profile_url_repply +`">`+repply_user_username+`</a>
+                                            <a class="formatted-text">`+repply_rep_message+`</a>  ` 
+        if (hasRPCommentImage){                                     
+            NewRepplyCommentHTML +=                                
+                                        `<div>
+                                                ` + repply_comment_imageHTML +`
+                                            </div>                           
+                                        </div>                                                   
+                                    `};
+    var newrepplyComment = $(NewRepplyCommentHTML);
+    $("#repply-section-" + comment_id).append(newrepplyComment);
 
-                },
-                error: function(error) {
-                }
-            });
+    },
+    error: function(error) {
+    }
+});
 });
 $(document).on('submit', '#del_comments', function(e) {
     e.preventDefault();
