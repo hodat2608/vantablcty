@@ -199,7 +199,18 @@
                         </button>
                     </form>
 
-                    <button  onclick="turnoncommentAndRefresh('{{ post.id }}')"><i class="fas fa-comment"></i> Comment</button>
+                    <!-- <button  onclick="turnoncommentAndRefresh('{{ post.id }}')"><i class="fas fa-comment"></i> Comment</button> -->
+                     
+                    <!-- <button  onclick="toggleCommentPopupWithDelay('{{ post.id }}')"><i class="fas fa-comment"></i> Comment</button> -->
+
+                    <!-- <form action="{% url 'update_post_likes' 0 %}" method="post">
+                        {% csrf_token %}
+                        <button  onclick="toggleCommentPopupWithDelay('{{ post.id }}')"><i class="fas fa-comment"></i> Comment</button>
+                    </form> -->
+                    <form id="like-form" method="post">
+                        {% csrf_token %}
+                        <button type="button" onclick="toggleCommentPopupWithDelay('{{ post.id }}')"><i class="fas fa-comment"></i> Comment</button>
+                    </form>
 
                     <button type="submit" id="share-button-{{ post.id }}"> <i class="fas fa-share"></i> Share</button>
 
@@ -588,6 +599,24 @@ function toggleCommentPopupWithDelay(postID) {
         setTimeout(function() {
             var popup = document.getElementById("comment-popup-" + postID);
             popup.style.display = "block";
+            $.ajax({
+                type: 'POST',
+                url: '/update_post_likes/' + postID + '/',
+                success: function(data) {
+                    var liked_button_section = $('#like-button-section-' + postID);
+                    var liked_count_section = $('#like-count-section-' + postID);
+
+                    if (data.update_like) {
+                        liked_button_section.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'blue').css('font-weight', 'normal');
+                        form.data('liked-section',true);
+                        liked_count_section.html(data.update_like_count + ' like' + (data.update_like_count > 1 ? 's' : '') +' <i class="fas fa-thumbs-up"></i>').css('color', 'blue').css('font-weight', 'normal');
+                    } else {
+                        liked_button_section.html('<i class="fas fa-thumbs-up"></i> Like').css('color', 'black');
+                        form.data('liked-section',false);
+                        liked_count_section.html(data.update_like_count + ' like' + (data.update_like_count > 1 ? 's' : ''));
+                    }
+                }
+            });
         }, 10);
     } else {
         closeCommentPopup();
@@ -609,34 +638,6 @@ function closePopupAndReload() {
         location.reload();
     }, 10);
 }
-
-// $(document).on('submit', '#send-comment', function(e) {
-//     e.preventDefault();
-//     var form = $(this);
-//     var sendcommentId = form.data('send-id');
-//     var popup_q = document.getElementById("comment-popup-" + sendcommentId);
-//     var popupScrollPosition_cmt = $(popup_q).scrollTop();
-//     var message = form.find('input[name="message"]').val();
-//     var massageImage = $("#massage_image").prop('files')[0];
-//     var formData = new FormData();
-//     formData.append('message', message);
-//     formData.append('massage_image', massageImage);
-//     formData.append('csrfmiddlewaretoken', $('input[name=csrfmiddlewaretoken]').val());
-//     $.ajax({
-//         type: 'POST',
-//         url: '/send_comment/' + sendcommentId + '/',
-//         data: formData,
-//         processData: false,
-//         contentType: false,
-//         success: function() {  
-//             localStorage.setItem("popupScrollPosition_cmt", popupScrollPosition_cmt); 
-//             localStorage.setItem("sendcommentId", sendcommentId);
-//             setTimeout(function() {
-//                 location.reload();
-//             }, 50);
-//         }
-//     });
-// });
 
 $(document).ready(function() {
     var popupScrollPosition_cmt = localStorage.getItem("popupScrollPosition_cmt"); 
@@ -1031,9 +1032,9 @@ $.ajax({
         var repply_rep_mess_image = data.repply_rep_mess_image;
         var profile_url_repply = data.profile_url_repply;
         var avatar_url_rp = data.avatar_url_rp;
-        var hasCommentImage = repply_rep_mess_image && repply_rep_mess_image.trim() !== '';
+        var hasRPCommentImage = repply_rep_mess_image && repply_rep_mess_image.trim() !== '';
         var repply_comment_imageHTML = '';
-            if (hasCommentImage) {repply_comment_imageHTML =  `<img src="`+repply_rep_mess_image+`" width="100" height="100"`};
+            if (hasRPCommentImage) {repply_comment_imageHTML =  `<img src="`+repply_rep_mess_image+`" width="100" height="100"`};
 
         var NewRepplyCommentHTML=   `   
                                         <div class="comment-cad-repply"> 
@@ -1042,20 +1043,19 @@ $.ajax({
                                                 <img class="img12" src="`+avatar_url_rp+`">
                                             </div>
                                             <a href="` + profile_url_repply +`">`+repply_user_username+`</a>
-                                            <a class="formatted-text">`+repply_rep_message+`</a>  ` 
+                                            <a class="formatted-text">`+repply_rep_message+`</a> ` 
         if (hasRPCommentImage){                                     
             NewRepplyCommentHTML +=                                
-                                        `<div>
+                                            `<div>
                                                 ` + repply_comment_imageHTML +`
                                             </div>                           
                                         </div>                                                   
                                     `};
-    var newrepplyComment = $(NewRepplyCommentHTML);
-    $("#repply-section-" + comment_id).append(newrepplyComment);
+        var newrepplyComment = $(NewRepplyCommentHTML);
+        $("#repply-section-" + comment_id).append(newrepplyComment);
 
     },
-    error: function(error) {
-    }
+    error: function(error) {}
 });
 });
 $(document).on('submit', '#del_comments', function(e) {

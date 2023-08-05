@@ -11,6 +11,7 @@ urlpatterns = [
     path('del_comment/<str:pk>/', views.del_comment, name = 'del_comment'),
     path('post_likes_post_profile/<str:pk>/', views.post_likes_post_profile, name = 'post_likes_post_profile'),
     path('sare_post_likes/<str:pk>/', views.sare_post_likes, name = 'sare_post_likes'),
+    path('update_post_likes/<str:pk>/', views.update_post_likes, name = 'update_post_likes'),
     path('sare_post_likes_section/<str:pk>/', views.sare_post_likes_section, name = 'sare_post_likes_section'),
     path('post_like_post_comment_section/<str:pk>/', views.post_like_post_comment_section, name = 'post_like_post_comment_section'),
     path('send_comment/<str:pk>/', views.send_comment, name = 'send_comment'),

@@ -122,6 +122,20 @@ def post_like_post_comment_section(request,pk):
     context = {'liked_section':liked_section,'likes_count_section':likes_count_section}
     return JsonResponse(context)
 
+def update_post_likes(request,pk):
+    post_like_is = get_object_or_404(PostViews,pk=pk)
+    user = request.user
+    if request.method == 'POST':
+        if user in post_like_is.post_likes.all():
+            post_like_is.post_likes.remove(user)
+            update_like = False
+        else:
+            update_like = True 
+            post_like_is.post_likes.add(user)
+    update_like_count = post_like_is.post_likes.count()
+    context = {'update_like':update_like,'update_like_count':update_like_count}
+    return JsonResponse(context)
+
 @login_required(login_url='user_login')
 def create_post(request):
     if request.method == 'POST':
